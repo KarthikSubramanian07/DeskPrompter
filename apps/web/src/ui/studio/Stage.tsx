@@ -4,7 +4,8 @@
  */
 import { useSignal } from '@preact/signals'
 import { useEffect, useRef } from 'preact/hooks'
-import type { ParsedScript, PrompterMode } from '../../core/contracts'
+import type { ParsedScript, PrompterMode, RemoteCommand } from '../../core/contracts'
+import type { HostBridge } from '../../core/bridge'
 import { Prompter, speedToWpm } from '../../core/prompter'
 import { patchSettings, settings, type Script } from '../../core/store'
 import { estimateRemainingMs, formatClock } from '../../core/timing'
@@ -28,6 +29,10 @@ export interface StageProps {
   status?: string
   /** Display-only window: no HUD, no countdown. */
   display?: boolean
+  /** Host bridge for phones and talent windows. */
+  bridge?: HostBridge
+  /** Override mirroring (talent display windows choose their own). */
+  mirror?: { x: boolean; y: boolean }
 }
 
 const MODES: { value: PrompterMode; label: string }[] = [
@@ -36,7 +41,7 @@ const MODES: { value: PrompterMode; label: string }[] = [
   { value: 'breath', label: 'Breath' },
 ]
 
-export function Stage({ script, parsed, onExit, onReady, level, status, display }: StageProps) {
+export function Stage({ script, parsed, onExit, onReady, level, status, display, bridge, mirror }: StageProps) {
   const viewport = useRef<HTMLDivElement>(null)
   const column = useRef<HTMLDivElement>(null)
   const prompterRef = useRef<Prompter | null>(null)
@@ -62,6 +67,24 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display 
     prompterRef.current = p
     let lastBlockWord = -1
     p.events.tick = (t) => {
+      if (bridge) {
+        const st = settings.value
+        const words = p.wordCount
+        const wpmNow = st.mode === 'voice' && p.voiceWpm ? p.voiceWpm : speedToWpm(st.speed)
+        bridge.publish({
+          playing: t.playing,
+          speed: st.speed,
+          progress: t.progress,
+          elapsedMs: elapsed.value,
+          remainingMs: estimateRemainingMs(Math.max(0, words - t.wordAtLine), wpmNow),
+          wpm: Math.round(wpmNow),
+          mode: st.mode,
+          mirrorX: st.mirrorX,
+          mirrorY: st.mirrorY,
+          title: script.title,
+          currentLine: p.lineText(t.wordAtLine),
+        })
+      }
       progress.value = t.progress
       playing.value = t.playing
       wordAt.value = t.wordAtLine
@@ -187,8 +210,59 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display 
     playing.value = true
   }
 
+  // Commands from a paired phone or another window.
+  useEffect(() => {
+    if (!bridge) return
+    return bridge.onCommand((c: RemoteCommand) => {
+      const p = prompterRef.current
+      if (!p) return
+      const st = settings.value
+      hudVisible.value = true
+      switch (c.c) {
+        case 'toggle':
+          startRef.current()
+          break
+        case 'play':
+          if (!p.playing) startRef.current()
+          break
+        case 'pause':
+          if (p.playing) startRef.current()
+          break
+        case 'faster':
+          patchSettings({ speed: Math.min(10, st.speed + 0.5) })
+          break
+        case 'slower':
+          patchSettings({ speed: Math.max(1, st.speed - 0.5) })
+          break
+        case 'back':
+          p.stepLines(-1)
+          break
+        case 'forward':
+          p.stepLines(1)
+          break
+        case 'top':
+          p.seekWord(0)
+          elapsed.value = 0
+          break
+        case 'mirror':
+          patchSettings({ mirrorX: !st.mirrorX })
+          break
+        case 'speed':
+          patchSettings({ speed: Math.min(10, Math.max(1, c.v)) })
+          break
+        case 'seek':
+          p.seekProgress(c.v)
+          break
+        case 'nudge':
+          p.nudge(c.v * p.lineHeightPx)
+          break
+      }
+    })
+  }, [bridge])
+
   // Keyboard: the operator's whole vocabulary.
   useEffect(() => {
+    if (display) return
     const onKey = (e: KeyboardEvent) => {
       const p = prompterRef.current
       if (!p) return
@@ -262,6 +336,8 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display 
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
+  const startRef = useRef(start)
+  startRef.current = start
   const p = prompterRef.current
   const total = parsed.wordCount
   const wordsLeft = Math.max(0, total - wordAt.value)
@@ -278,7 +354,7 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display 
       }}
     >
       <div class="stage-progress" style={{ transform: `scaleX(${progress.value})` }} />
-      <div class="stage-mirror" style={{ transform: `scale(${s.mirrorX ? -1 : 1}, ${s.mirrorY ? -1 : 1})` }}>
+      <div class="stage-mirror" style={{ transform: `scale(${(mirror?.x ?? s.mirrorX) ? -1 : 1}, ${(mirror?.y ?? s.mirrorY) ? -1 : 1})` }}>
         <div class="stage-viewport" ref={viewport}>
           <div class={`stage-column ${s.mode === 'voice' ? 'is-voice' : ''}`} ref={column} />
           <div class="stage-line" aria-hidden="true">

@@ -13,6 +13,7 @@ import type { LinkStatus, PrompterSnapshot, RemoteCommand } from '../core/contra
 import { formatRoomCode, normalizeRoomCode } from '../link/code'
 import { createRemoteLink, type RemoteLink } from '../link/relay'
 import { useLink } from '../link/useLink'
+import { Mark } from '../ui/Mark'
 
 const STATUS_LABEL: Record<LinkStatus, string> = {
   idle: 'Starting',
@@ -101,7 +102,9 @@ function JoinForm({ onJoin }: { onJoin: (code: string) => void }) {
   return (
     <main class="remote remote--join">
       <header class="remote__bar">
-        <span class="remote__brand">DeskPrompter</span>
+        <span class="remote__brand">
+          <Mark size={18} /> DeskPrompter
+        </span>
         <span class="remote__label">Remote</span>
       </header>
       <form
@@ -172,7 +175,9 @@ function Remote({ code }: { code: string }) {
   return (
     <main class="remote" data-status={status}>
       <header class="remote__bar">
-        <span class="remote__brand">DeskPrompter</span>
+        <span class="remote__brand">
+          <Mark size={18} /> DeskPrompter
+        </span>
         <span class="remote__code" aria-label={`Room ${code.split('').join(' ')}`}>
           {formatRoomCode(code)}
         </span>
