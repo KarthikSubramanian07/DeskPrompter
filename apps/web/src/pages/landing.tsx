@@ -24,6 +24,8 @@ function Hero() {
         : { x: Math.max(110, r.width * 0.085), y: r.height * 0.93, scale: Math.min(1.22, r.height / 640) }
     }
     layout()
+    // On phones the cone crosses the body copy, so keep it soft.
+    handle.beamStrength = el.getBoundingClientRect().width < 760 ? 0.5 : 1
     handle.rig.powerOn()
     handle.rig.setMood('idle')
     const ro = new ResizeObserver(layout)
