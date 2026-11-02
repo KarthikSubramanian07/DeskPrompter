@@ -18,6 +18,10 @@ export interface LampHandle {
   beam: boolean
   /** Latest computed mouth position (overlay pixels), for anything that wants to follow the light. */
   mouth: { x: number; y: number }
+  /** Hang upside down from the anchor (a clamp lamp on a shelf above). */
+  hang: boolean
+  /** Beam strength multiplier (0..1). */
+  beamStrength: number
 }
 
 export function createLampHandle(init?: Partial<LampHandle>): LampHandle {
@@ -28,6 +32,8 @@ export function createLampHandle(init?: Partial<LampHandle>): LampHandle {
     look: null,
     beam: true,
     mouth: { x: 0, y: 0 },
+    hang: false,
+    beamStrength: 1,
     ...init,
   }
 }
@@ -67,15 +73,16 @@ export function Lamp({ handle, class: cls }: Props) {
       last = now
       const { anchor: a, rig } = handle
       const gaze = handle.look ?? handle.pool
-      rig.target = { x: (gaze.x - a.x) / a.scale, y: (gaze.y - a.y) / a.scale }
+      const fy = handle.hang ? -1 : 1
+      rig.target = { x: (gaze.x - a.x) / a.scale, y: ((gaze.y - a.y) / a.scale) * fy }
       const p = rig.step(dt)
       const sx = a.scale * p.facing
-      root.current?.setAttribute('transform', `translate(${a.x} ${a.y}) scale(${a.scale} ${a.scale})`)
+      root.current?.setAttribute('transform', `translate(${a.x} ${a.y}) scale(${a.scale} ${a.scale * fy})`)
       body.current?.setAttribute('transform', `translate(0 ${p.lift}) scale(${p.facing} ${p.squash})`)
       lower.current?.setAttribute('transform', `translate(0 ${GEO.shoulderY}) rotate(${p.a1 * DEG})`)
       upper.current?.setAttribute('transform', `translate(0 ${-GEO.l1}) rotate(${p.a2 * DEG})`)
       head.current?.setAttribute('transform', `translate(0 ${-GEO.l2}) rotate(${(p.h - p.a1 - p.a2) * DEG})`)
-      tag.current?.setAttribute('transform', `translate(9 -6) rotate(${(-p.h + p.tag) * DEG})`)
+      tag.current?.setAttribute('transform', `translate(9 -6) rotate(${(-p.h + p.tag + (handle.hang ? Math.PI : 0)) * DEG})`)
       const g = Math.max(0, p.glow)
       bulb.current?.setAttribute('opacity', String(0.25 + g * 0.75))
       rim.current?.setAttribute('opacity', String(0.15 + g * 0.85))
@@ -84,12 +91,12 @@ export function Lamp({ handle, class: cls }: Props) {
       // World-space light.
       const fk = forward(p)
       const wx = (x: number) => a.x + x * sx
-      const wy = (y: number) => a.y + (y * p.squash + p.lift) * a.scale
+      const wy = (y: number) => a.y + (y * p.squash + p.lift) * a.scale * fy
       const mx = wx(fk.mouth.x)
       const my = wy(fk.mouth.y)
       handle.mouth.x = mx
       handle.mouth.y = my
-      if (light.current) light.current.style.opacity = handle.beam ? String(Math.min(1, g)) : '0'
+      if (light.current) light.current.style.opacity = handle.beam ? String(Math.min(1, g) * handle.beamStrength) : '0'
       if (handle.beam && cone.current && pool.current && coneGrad.current) {
         // Mouth edges, perpendicular to the head direction.
         const px = -fk.dir.y

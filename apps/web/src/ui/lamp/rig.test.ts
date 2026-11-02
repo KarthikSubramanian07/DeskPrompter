@@ -53,3 +53,14 @@ describe('LampRig', () => {
     expect(pose.glow).toBeLessThan(0.35)
   })
 })
+
+describe('LampRig robustness', () => {
+  it('never produces NaN, even with zero or negative frame times', () => {
+    const rig = new LampRig()
+    rig.powerOn()
+    for (const dt of [0, 0, -0.01, 1 / 60, 0, 5, 1 / 240]) {
+      const p = rig.step(dt)
+      for (const v of Object.values(p)) expect(Number.isFinite(v)).toBe(true)
+    }
+  })
+})
