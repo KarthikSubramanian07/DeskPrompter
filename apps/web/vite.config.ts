@@ -19,7 +19,7 @@ const isolation = {
 /** Clean routes in dev and preview, matching Cloudflare Pages: /studio → studio.html. */
 const cleanRoutes = (): Plugin => {
   const rewrite = (req: { url?: string }, _res: unknown, next: () => void) => {
-    const m = req.url?.match(/^\/(studio|remote)\/?(\?.*)?$/)
+    const m = req.url?.match(/^\/(studio|remote|about|contact|privacy)\/?(\?.*)?$/)
     if (m) req.url = `/${m[1]}.html${m[2] ?? ''}`
     next()
   }
@@ -57,7 +57,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,woff2,wasm}'],
         maximumFileSizeToCacheInBytes: 6_000_000,
         // Moonshine's 13 MB runtime is too big to precache; its worker caches it on first use.
-        globIgnores: ['**/og.png', '**/moonshine-*.wasm'],
+        globIgnores: ['**/og.png', '**/moonshine-*.wasm', '**/_worker.js', '**/*.md'],
         // Each page is its own entry; precache's cleanURLs maps /studio → studio.html offline.
         navigateFallback: null,
       },
@@ -75,11 +75,14 @@ export default defineConfig({
         main: resolve(root, 'index.html'),
         studio: resolve(root, 'studio.html'),
         remote: resolve(root, 'remote.html'),
+        about: resolve(root, 'about.html'),
+        contact: resolve(root, 'contact.html'),
+        privacy: resolve(root, 'privacy.html'),
       },
     },
   },
   test: {
     environment: 'happy-dom',
-    include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'worker/**/*.test.ts', 'test/**/*.test.ts'],
   },
 })

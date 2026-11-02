@@ -22,9 +22,102 @@
     <meta name="twitter:title" content="Studio · DeskPrompter" />
     <meta name="twitter:description" content="Write, rehearse and read your script. Voice-follow scrolling runs on your device; nothing is uploaded." />
     <meta name="twitter:image" content="https://deskprompter.pages.dev/og.png" />
+    <link rel="alternate" type="text/markdown" href="/studio.md" />
+    <style>.js .prerender { display: none; }</style>
+    <script>
+      document.documentElement.classList.add('js')
+      // If the app never starts, show the prerendered page instead of nothing.
+      setTimeout(function () { if (!window.__dpMounted) document.documentElement.classList.remove('js') }, 6000)
+    </script>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <!-- prerender:start -->
+      <main class="prerender">
+        <h1>DeskPrompter Studio</h1>
+        <p>The studio is where you write a script and read it. It is a web app: open <a href="https://deskprompter.pages.dev/studio">https://deskprompter.pages.dev/studio</a> in Chrome, Edge, Safari or Firefox. Scripts are saved in your browser and never uploaded.</p>
+        <h2>Write a script</h2>
+        <ul>
+        <li>Separate paragraphs with a blank line.</li>
+        <li>Start a section with <code># Heading</code>. Headings are shown on stage but not read.</li>
+        <li>Put stage directions in square brackets, like <code>[pause]</code> or <code>[smile]</code>. Cues are shown but never tracked.</li>
+        <li>Or drop a <code>.txt</code> or <code>.md</code> file onto the desk. Markdown headings become sections and formatting is removed.</li>
+        </ul>
+        <h2>Read it</h2>
+        <p>Press <strong>Go</strong> to open the stage, then press play.</p>
+        <ul>
+        <li><strong>Voice mode</strong> follows your place as you speak. It uses an on-device recognizer, downloading the Moonshine model (about 51 MB) the first time if needed.</li>
+        <li><strong>Breath mode</strong> scrolls while you talk and stops when you pause.</li>
+        <li><strong>Steady mode</strong> scrolls at a set number of words per minute.</li>
+        </ul>
+        <h2>Keyboard shortcuts on stage</h2>
+        <table>
+        <thead>
+        <tr>
+        <th>Key</th>
+        <th>Action</th>
+        </tr>
+        </thead>
+        <tbody><tr>
+        <td>Space</td>
+        <td>Play or pause</td>
+        </tr>
+        <tr>
+        <td>Up / Down</td>
+        <td>Faster or slower (lines in voice mode)</td>
+        </tr>
+        <tr>
+        <td>Left / Right</td>
+        <td>Back or forward a line</td>
+        </tr>
+        <tr>
+        <td>Page Up / Page Down</td>
+        <td>Back or forward a paragraph (presentation clickers)</td>
+        </tr>
+        <tr>
+        <td>Home</td>
+        <td>Back to the top</td>
+        </tr>
+        <tr>
+        <td>1, 2, 3</td>
+        <td>Steady, voice or breath mode</td>
+        </tr>
+        <tr>
+        <td>M</td>
+        <td>Mirror for glass</td>
+        </tr>
+        <tr>
+        <td>F</td>
+        <td>Fullscreen</td>
+        </tr>
+        <tr>
+        <td>+ / -</td>
+        <td>Bigger or smaller type</td>
+        </tr>
+        <tr>
+        <td>?</td>
+        <td>Show all shortcuts</td>
+        </tr>
+        <tr>
+        <td>Esc</td>
+        <td>Back to the desk</td>
+        </tr>
+        </tbody></table>
+        <h2>Open a script from a link</h2>
+        <p>Agents and other tools can open a script directly. The script travels in the URL fragment, which browsers never send to a server:</p>
+        <p><code>https://deskprompter.pages.dev/studio#title=&lt;url-encoded title&gt;&amp;script=&lt;url-encoded script&gt;</code></p>
+        <h2>More</h2>
+        <ul>
+        <li>Phone remote: choose <strong>Pair a phone</strong> and scan the QR code.</li>
+        <li>Talent window: choose <strong>Talent window</strong> for a mirrored second screen.</li>
+        <li>Captions: after a voice-mode read, pause and download SRT or VTT.</li>
+        </ul>
+        <nav class="prerender-links" aria-label="More">
+          <a href="/about">About</a> · <a href="/contact">Contact</a> · <a href="/privacy">Privacy</a> · <a href="/llms.txt">llms.txt</a>
+        </nav>
+      </main>
+      <!-- prerender:end -->
+    </div>
     <noscript>DeskPrompter needs JavaScript to run. It never sends your scripts anywhere.</noscript>
     <script type="module" src="/src/pages/studio.tsx"></script>
   </body>

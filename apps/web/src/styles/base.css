@@ -53,3 +53,16 @@ a { color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
 }
+
+/* Readable fallback inside #app: what crawlers, agents and no-JS visitors see. */
+.prerender {
+  max-width: 760px; margin: 0 auto; padding: 48px 24px 72px;
+  min-height: 100vh; background: #f4f1e9; color: #1b1a17;
+  font-family: var(--sans); font-size: 17px; line-height: 1.7;
+}
+.prerender h1 { font-family: var(--display); font-weight: 400; font-size: clamp(40px, 7vw, 64px); line-height: 1.02; margin: 0 0 18px; }
+.prerender h2 { font-family: var(--serif); font-weight: 500; font-size: 24px; margin: 36px 0 10px; }
+.prerender a { color: #a94f31; overflow-wrap: anywhere; }
+.prerender table { border-collapse: collapse; width: 100%; }
+.prerender th, .prerender td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #e0dbcf; }
+.prerender-links { margin-top: 40px; font-size: 14px; }

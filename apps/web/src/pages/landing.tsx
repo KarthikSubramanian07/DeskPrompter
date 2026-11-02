@@ -5,6 +5,7 @@ import '../pwa'
 import './landing.css'
 import { createLampHandle, Lamp } from '../ui/lamp/Lamp'
 import { Mark } from '../ui/Mark'
+import { mountPoint } from '../mount'
 import { ModeIcon } from '../ui/icons'
 import { Demo } from '../ui/landing/Demo'
 
@@ -108,7 +109,7 @@ function Hero() {
           </span>
         </h1>
         <p class="hero-sub">
-          DeskPrompter scrolls when you speak and waits when you pause. It runs in your browser, works offline, and never
+          DeskPrompter is a free teleprompter that scrolls when you speak and waits when you pause. It runs in your browser, works offline, and never
           sends your words anywhere.
         </p>
         <div class="hero-cta">
@@ -292,6 +293,12 @@ function Landing() {
             <span class="foot-brand">
               <Mark size={18} /> DeskPrompter
             </span>
+            <nav class="foot-links" aria-label="More">
+              <a href="/about">About</a>
+              <a href="/contact">Contact</a>
+              <a href="/privacy">Privacy</a>
+              <a href="/llms.txt">llms.txt</a>
+            </nav>
             <span class="foot-note">Made late at night. Open source under MIT.</span>
           </footer>
         </div>
@@ -300,4 +307,4 @@ function Landing() {
   )
 }
 
-render(<Landing />, document.getElementById('app')!)
+render(<Landing />, mountPoint())
