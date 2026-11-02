@@ -7,7 +7,7 @@ import './studio.css'
 import { aligner, loadAlignerOnce, parseScript } from '../core/parser'
 import { currentId, hydrate, ready, scripts, settings } from '../core/store'
 import { Mark } from '../ui/Mark'
-import { Desk } from '../ui/studio/Desk'
+import { Desk, deskSheet } from '../ui/studio/Desk'
 import { Stage } from '../ui/studio/Stage'
 import { Kbd } from '../ui/studio/controls'
 import { PairButton, TalentButton } from '../ui/studio/Pair'
@@ -58,6 +58,12 @@ function Studio() {
               <span>DeskPrompter</span>
             </a>
             <div class="bar-right">
+              <button class="bar-btn bar-sheet bar-sheet-scripts" onClick={() => (deskSheet.value = 'scripts')}>
+                Scripts
+              </button>
+              <button class="bar-btn bar-sheet bar-sheet-setup" onClick={() => (deskSheet.value = 'setup')}>
+                Settings
+              </button>
               {bridge && <TalentButton />}
               {bridge && <PairButton bridge={bridge} />}
               <span class="bar-privacy" title="Scripts are stored in this browser. Nothing is uploaded.">

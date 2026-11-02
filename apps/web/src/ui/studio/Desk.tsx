@@ -2,7 +2,7 @@
  * The writing desk: scripts on the left, the page in the middle, the setup on
  * the right, and the lamp keeping you company in the corner.
  */
-import { useComputed, useSignal } from '@preact/signals'
+import { signal, useComputed, useSignal } from '@preact/signals'
 import { useEffect, useMemo, useRef } from 'preact/hooks'
 import { parseScript } from '../../core/parser'
 import {
@@ -32,9 +32,25 @@ function ago(t: number): string {
   return `${Math.floor(s / 86400)}d ago`
 }
 
+/** On small screens the rail and the setup panel slide up as sheets. */
+export const deskSheet = signal<'none' | 'scripts' | 'setup'>('none')
+
+function SheetHead({ title }: { title: string }) {
+  return (
+    <div class="sheet-head">
+      <span class="sheet-grip" aria-hidden="true" />
+      <span class="sheet-title">{title}</span>
+      <button class="sheet-done" onClick={() => (deskSheet.value = 'none')}>
+        Done
+      </button>
+    </div>
+  )
+}
+
 function Rail() {
   return (
-    <aside class="rail">
+    <aside class={`rail ${deskSheet.value === 'scripts' ? 'is-open' : ''}`}>
+      <SheetHead title="Scripts" />
       <div class="rail-head">
         <span class="rail-heading">Scripts</span>
         <label class="icon-btn" title="Import a .txt or .md file" aria-label="Import a script file">
@@ -62,7 +78,13 @@ function Rail() {
       <ul class="rail-list">
         {scripts.value.map((s) => (
           <li key={s.id}>
-            <button class={`rail-item ${s.id === currentId.value ? 'on' : ''}`} onClick={() => selectScript(s.id)}>
+            <button
+              class={`rail-item ${s.id === currentId.value ? 'on' : ''}`}
+              onClick={() => {
+                selectScript(s.id)
+                deskSheet.value = 'none'
+              }}
+            >
               <span class="rail-dot" aria-hidden="true" />
               <span class="rail-title">{s.title || 'Untitled'}</span>
               <span class="rail-meta">{ago(s.updatedAt)}</span>
@@ -151,7 +173,8 @@ function Page({ script }: { script: Script }) {
 function Setup() {
   const s = settings.value
   return (
-    <aside class="setup">
+    <aside class={`setup ${deskSheet.value === 'setup' ? 'is-open' : ''}`}>
+      <SheetHead title="Settings" />
       <Section label="Motion">
         <Segmented
           label="Scroll mode"
@@ -164,7 +187,7 @@ function Setup() {
           ]}
         />
         <p class="setup-note">
-          {s.mode === 'manual' && 'A steady glide. Space to pause, arrows to adjust.'}
+          {s.mode === 'manual' && 'A steady glide at the pace you set.'}
           {s.mode === 'voice' && 'Listens and follows your place in the script. Skip, stumble or ad-lib, and it keeps up.'}
           {s.mode === 'breath' && 'No speech recognition. Scrolls while you talk and settles when you stop.'}
         </p>
@@ -284,6 +307,7 @@ export function Desk() {
 
   return (
     <div class="desk">
+      {deskSheet.value !== 'none' && <div class="sheet-scrim" onClick={() => (deskSheet.value = 'none')} />}
       <Rail />
       <div
         class={`desk-center ${dragging.value ? 'is-dropping' : ''}`}
