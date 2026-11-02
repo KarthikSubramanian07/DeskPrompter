@@ -29,6 +29,16 @@ const ENGINE_LABEL: Record<SpeechEngineId, string> = {
   'cloud-web-speech': 'Listening via your browser’s cloud service',
 }
 
+/**
+ * Streaming engines only finalize at pauses. While tracking confidently, words
+ * two or more behind the lead count as read: an interim hypothesis's prefix is
+ * stable, so continuous speech still paints and stamps as you go.
+ */
+export function settledCursor(r: AlignResult): number {
+  if (r.state === 'tracking' && r.confidence >= 0.5) return Math.max(r.cursor, r.lead - 2)
+  return r.cursor
+}
+
 export class Listener {
   readonly level = signal<VoiceSample>({ level: 0, speaking: false })
   readonly state = signal<ListenState>('off')
@@ -123,11 +133,12 @@ export class Listener {
         const r = this.aligner.feed(text, isFinal)
         this.track.value = r
         if (!r.changed) return
+        const settled = settledCursor(r)
         const before = this.stamps.at(-1)?.wi ?? -1
-        this.prompter.follow(r.cursor, r.lead)
-        if (r.cursor > before) {
-          this.stampUpTo(r.cursor)
-          hint(r.cursor)
+        this.prompter.follow(settled, r.lead)
+        if (settled > before) {
+          this.stampUpTo(settled)
+          hint(settled)
         }
         this.prompter.voiceWpm = rollingWpm(this.stamps, performance.now() - this.t0)
       }),
