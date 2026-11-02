@@ -230,6 +230,24 @@ export class Prompter {
     this.ended = false
   }
 
+  /** The visible line that contains word `wi` (for the phone's glance view). */
+  lineText(wi = this.wordAtLine()): string {
+    if (wi < 0 || !this.lineStarts.length) return ''
+    let li = 0
+    for (let i = 0; i < this.lineStarts.length; i++) if (this.lineStarts[i]! <= wi) li = i
+    const from = this.lineStarts[li]!
+    const to = this.lineStarts[li + 1] ?? this.spans.length
+    const out: string[] = []
+    for (let i = from; i < to; i++) if (this.spans[i]) out.push(this.spans[i]!.textContent ?? '')
+    return out.join(' ')
+  }
+
+  get lineHeightPx() {
+    const a = this.lineStarts
+    if (a.length < 2) return 60
+    return Math.abs((this.wordY[a[1]!] ?? 0) - (this.wordY[a[0]!] ?? 0)) || 60
+  }
+
   /** Jump by visual lines (negative = back). */
   stepLines(n: number) {
     const w = this.wordAtLine()
