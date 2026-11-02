@@ -9,6 +9,14 @@ import { Mark } from '../ui/Mark'
 import { Desk } from '../ui/studio/Desk'
 import { Stage } from '../ui/studio/Stage'
 import { Kbd } from '../ui/studio/controls'
+import { PairButton, TalentButton } from '../ui/studio/Pair'
+import { HostBridge } from '../core/bridge'
+import { Display } from '../ui/studio/Display'
+
+const params = new URLSearchParams(location.search)
+const IS_DISPLAY = params.has('display')
+const bridge = IS_DISPLAY ? null : new HostBridge()
+addEventListener('pagehide', () => bridge?.close())
 
 function Studio() {
   const view = useSignal<'desk' | 'stage'>('desk')
@@ -19,6 +27,10 @@ function Studio() {
   useEffect(() => {
     void hydrate()
   }, [])
+
+  useEffect(() => {
+    if (script.value) bridge?.setScript(script.value.title, script.value.text)
+  }, [script.value?.title, script.value?.text])
 
   useEffect(() => {
     document.documentElement.dataset.theme = settings.value.theme
@@ -47,6 +59,8 @@ function Studio() {
               <span>DeskPrompter</span>
             </a>
             <div class="bar-right">
+              {bridge && <TalentButton />}
+              {bridge && <PairButton bridge={bridge} />}
               <span class="bar-privacy" title="Scripts are stored in this browser. Nothing is uploaded.">
                 <span class="dot-sage" /> Private, works offline
               </span>
@@ -62,10 +76,10 @@ function Studio() {
           <Desk />
         </>
       ) : (
-        <Stage script={script.value} parsed={parsed} onExit={() => (view.value = 'desk')} />
+        <Stage script={script.value} parsed={parsed} bridge={bridge ?? undefined} onExit={() => (view.value = 'desk')} />
       )}
     </div>
   )
 }
 
-render(<Studio />, document.getElementById('app')!)
+render(IS_DISPLAY ? <Display mirrorX={params.get('mirror') === '1'} /> : <Studio />, document.getElementById('app')!)
