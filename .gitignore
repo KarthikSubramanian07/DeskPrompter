@@ -1,0 +1,11 @@
+node_modules/
+dist/
+target/
+.wrangler/
+.DS_Store
+*.log
+zig-out/
+.zig-cache/
+apps/web/src/wasm/generated/
+apps/web/public/wasm/
+.env*
