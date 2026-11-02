@@ -1,0 +1,6 @@
+# Cross-origin isolation for in-browser speech recognition (Moonshine needs
+# SharedArrayBuffer for WebAssembly threads). Everything the app loads is
+# same-origin or a CORS fetch, so require-corp blocks nothing we use.
+/*
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: require-corp
