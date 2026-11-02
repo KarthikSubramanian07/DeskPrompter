@@ -8,7 +8,9 @@ import type { ParsedScript, PrompterMode, RemoteCommand } from '../../core/contr
 import type { HostBridge } from '../../core/bridge'
 import { Prompter, speedToWpm } from '../../core/prompter'
 import { patchSettings, settings, type Script } from '../../core/store'
-import { estimateRemainingMs, formatClock } from '../../core/timing'
+import { buildCues, estimateRemainingMs, formatClock, toSrt, toVtt } from '../../core/timing'
+import { Listener } from '../../core/listen'
+import { spokenWords } from '../../core/script'
 import { createLampHandle, Lamp } from '../lamp/Lamp'
 import { CameraCheck } from './CameraCheck'
 import { Kbd } from './controls'
@@ -53,6 +55,15 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
   const countdown = useSignal<number | null>(null)
   const wordAt = useSignal(0)
   const s = settings.value
+  const listener = useRef<Listener | null>(null)
+  const parsedRef = useRef(parsed)
+  parsedRef.current = parsed
+  const live = listener.current
+  if (!level && live && live.state.value !== 'off') {
+    const v = live.level.value
+    level = { value: v.level, speaking: v.speaking }
+  }
+  status = status ?? (live?.status.value || undefined)
   const levelRef = useRef(level)
   levelRef.current = level
 
@@ -101,8 +112,17 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
       handle.rig.hop(0.6)
     }
     onReady?.({ prompter: p })
-    return () => p.destroy()
+    if (!display) listener.current = new Listener(p, script.text, () => spokenWords(parsedRef.current))
+    return () => {
+      void listener.current?.stop()
+      p.destroy()
+    }
   }, [])
+
+  // Listening follows the mode: breath needs the voice gate, voice needs the full chain.
+  useEffect(() => {
+    void listener.current?.start(s.mode, { engine: s.engine, allowCloud: s.allowCloud, sensitivity: s.sensitivity })
+  }, [s.mode, s.engine, s.allowCloud, s.sensitivity])
 
   // Script content.
   useEffect(() => {
@@ -336,6 +356,18 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
+  const exportCaptions = (kind: 'srt' | 'vtt') => {
+    const l = listener.current
+    if (!l) return
+    const cues = buildCues(spokenWords(parsed), l.stamps)
+    const body = kind === 'srt' ? toSrt(cues) : toVtt(cues)
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(new Blob([body], { type: kind === 'srt' ? 'application/x-subrip' : 'text/vtt' }))
+    a.download = `${(script.title || 'script').replace(/[^\w\- ]+/g, '').trim() || 'script'}.${kind}`
+    a.click()
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000)
+  }
+
   const startRef = useRef(start)
   startRef.current = start
   const p = prompterRef.current
@@ -431,6 +463,17 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
                   <span style={{ transform: `scaleY(${Math.max(0.15, Math.min(1, (level?.value ?? 0) * 1.6 - i * 0.12))})` }} />
                 ))}
               </span>
+            </>
+          )}
+          {listener.current && listener.current.stamps.length > 3 && !playing.value && (
+            <>
+              <span class="hud-sep" />
+              <button class="hud-text" onClick={() => exportCaptions('srt')} title="Download timed captions (SRT)">
+                SRT
+              </button>
+              <button class="hud-text" onClick={() => exportCaptions('vtt')} title="Download timed captions (WebVTT)">
+                VTT
+              </button>
             </>
           )}
           <span class="hud-sep" />

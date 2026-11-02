@@ -154,6 +154,27 @@ function Setup() {
         )}
       </Section>
 
+      {s.mode !== 'manual' && (
+        <Section label="Listening">
+          <Slider
+            label="Mic sensitivity"
+            value={Math.round(s.sensitivity * 100)}
+            min={0}
+            max={100}
+            format={(v) => (v < 34 ? 'Close mic' : v < 67 ? 'Normal' : 'Soft voice')}
+            onInput={(v) => patchSettings({ sensitivity: v / 100 })}
+          />
+          {s.mode === 'voice' && (
+            <Toggle
+              label="Allow cloud recognition"
+              hint="Only if on-device isn’t available. Audio goes to your browser’s speech service."
+              checked={s.allowCloud}
+              onChange={(allowCloud) => patchSettings({ allowCloud })}
+            />
+          )}
+        </Section>
+      )}
+
       <Section label="Type">
         <Slider label="Size" value={s.fontSize} min={28} max={120} format={(v) => `${v}px`} onInput={(fontSize) => patchSettings({ fontSize })} />
         <Slider label="Measure" value={s.measure} min={14} max={48} format={(v) => `${v} ch`} onInput={(measure) => patchSettings({ measure })} />
