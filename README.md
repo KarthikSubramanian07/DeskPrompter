@@ -4,7 +4,7 @@
 
 # DeskPrompter
 
-**A teleprompter that listens.** It scrolls when you speak, waits when you pause, and finds you again when you skip a line. It runs in your browser, works offline, and never sends your words anywhere.
+**A browser teleprompter with voice tracking.** Follow your script by voice, scroll while talking, or set a steady speed. Speech recognition runs on your device by default.
 
 [**deskprompter.pages.dev**](https://deskprompter.pages.dev) · [Open the studio](https://deskprompter.pages.dev/studio)
 
@@ -18,17 +18,17 @@
 
 ## Why this exists
 
-Good teleprompters keep their best trick, scrolling that follows your voice, behind a subscription because the listening usually happens on someone else's server. DeskPrompter does the listening on your machine and the matching in WebAssembly, so there's nothing to pay for and nothing to leak. Scripts live in your browser's storage. There are no accounts and no analytics.
+DeskPrompter is a free, open-source teleprompter with on-device speech recognition. Scripts are saved in your browser. It needs no account and has no analytics.
 
-Meet the lamp. Its light is the reading line. It nods when you finish a paragraph, leans in while you talk, droops when you pause, and dozes off if you leave it alone long enough. It also wears a little paper tag that says hi.
+The lamp marks your reading line and responds to speech and pauses. You can hide it in settings.
 
 ## What it does
 
 | | | |
 |---|---|---|
-| 1 | **Voice-follow** | Matches what you say against the script, word by word. Skips, stumbles, ad-libs and re-reads are handled. Recognition stays on-device: Chrome's local engine, or Moonshine (a ~51 MB streaming model, downloaded once and cached) running in a worker. |
-| 2 | **Breath mode** | No speech recognition at all. A tiny Zig voice detector scrolls while you talk and glides to a stop when you pause. |
-| 3 | **Steady mode** | The classic glide, calibrated in words per minute. Speed changes ease in instead of jumping. |
+| 1 | **Voice-follow** | Matches what you say against the script, word by word. Recognition stays on-device: Chrome's local engine, or Moonshine (a ~51 MB streaming model, downloaded once and cached) running in a worker. |
+| 2 | **Talk to scroll** | No speech recognition at all. A tiny Zig voice detector scrolls while you talk and glides to a stop when you pause. |
+| 3 | **Auto scroll** | The classic glide, calibrated in words per minute. Speed changes ease in instead of jumping. |
 | 4 | **Phone remote** | Click *Pair a phone*, scan the QR code, and your phone is the clicker, with the current line, pace and time left. Commands go peer to peer over WebRTC. |
 | 5 | **Glass-ready** | Horizontal and vertical mirroring for beam-splitter rigs, an adjustable reading line under the lens, a camera check for framing, and a *Talent window* that follows the operator on a second screen (no network needed). |
 | 6 | **Captions** | In voice mode every word you read is timed. Pause, then hit SRT or VTT in the controls and drop the file onto your edit timeline. |
@@ -76,7 +76,7 @@ flowchart TB
 | `zig/vad` | Zig → WebAssembly | Voice activity detection in an AudioWorklet: high-pass filter, adaptive noise floor, hysteresis. No allocator, a few KB. |
 | `crates/relay` | Rust → Cloudflare Workers | A Durable Object that introduces your phone to your laptop (WebRTC signaling) and relays only if peer-to-peer fails. |
 
-Why these languages: the aligner runs on every recognizer update and has to be fast and predictable, so it's Rust. The voice detector runs 375 times a second on the audio thread with no garbage collector allowed, so it's Zig. The relay shares Rust's types and runs at the edge for pennies.
+Why these languages: the aligner runs on every recognizer update and has to be fast and predictable, so it's Rust. The voice detector runs 375 times a second on the audio thread with no garbage collector allowed, so it's Zig. The relay shares Rust's types and handles pairing and connection fallback.
 
 ## Run it
 
@@ -116,4 +116,4 @@ How it's built: `apps/web/worker/` is a Cloudflare Pages advanced-mode worker (`
 
 Voice-follow ideas were borrowed (not code) from [linefeed](https://github.com/NxTsh/linefeed), [Suflyor](https://github.com/olerast67/voice-teleprompter-android), [Textream](https://github.com/f/textream) and [promptme-ai](https://github.com/larsbaunwall/promptme-ai). Type is set in Newsreader, Hanken Grotesk and Caveat (all under the SIL Open Font License).
 
-MIT © Karthik Subramanian. Made late at night.
+MIT © Karthik Subramanian.

@@ -2,8 +2,7 @@
 
 The voice-follow core of DeskPrompter. It turns a script into display tokens
 and keeps track of where you are in it while you speak. Pure Rust, compiled to
-WebAssembly. No network, no models, no allocation storms: one feed on a
-10,000-word script takes microseconds.
+WebAssembly. It matches recognizer output against the script without a network connection or a language model.
 
 ```mermaid
 flowchart TB

@@ -10,7 +10,7 @@ export interface ModeCopy {
 export const MODE_COPY: Record<PrompterMode, ModeCopy> = {
   voice: {
     label: 'Voice follow',
-    summary: 'Listens as you read and keeps your place. Skip, stumble or ad-lib and it keeps up.',
+    summary: 'Matches your speech to the script and scrolls to your current line.',
     needsMic: true,
   },
   breath: {

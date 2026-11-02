@@ -126,14 +126,14 @@ function Hero() {
 const STEPS = [
   { title: 'Add your script', body: 'Type it, paste it, or drop in a text file. Your scripts are saved in this browser.' },
   { title: 'Choose how it scrolls', body: 'Let it follow your voice, move only while you talk, or scroll at a steady speed.' },
-  { title: 'Press Start and read', body: 'Look at the camera and talk normally. If you skip or repeat a line, it keeps up.' },
+  { title: 'Press Start and read', body: 'Read at your own pace. Use the play button or Space to pause.' },
 ]
 
 const MODES = [
   {
     mode: 'voice' as const,
     title: 'Follows your voice',
-    body: 'It listens as you read and keeps your current line in view. Skip ahead or go back and it finds your place.',
+    body: 'Matches your speech to the script and scrolls to your current line.',
   },
   {
     mode: 'breath' as const,
@@ -151,13 +151,13 @@ const EXTRAS = [
   { title: 'Use your phone as a remote', body: 'Scan a code and control the teleprompter from your phone.' },
   { title: 'Works with teleprompter glass', body: 'Flip the text for a mirror rig, or send it to a second screen.' },
   { title: 'Captions from your read', body: 'After reading in voice mode, download subtitles for your video editor.' },
-  { title: 'Phones, tablets, offline', body: 'Use it on any device. Install it like an app and it works without internet.' },
+  { title: 'Phones, tablets, offline', body: 'Install the app for offline use. Voice follow needs a speech model downloaded first.' },
 ]
 
 const FAQ = [
   { q: 'Is it really free?', a: 'Yes. There is no paid plan, no trial and no ads. The code is open source.' },
   { q: 'Do I need an account?', a: 'No. Open the teleprompter and start. Your scripts are saved in your browser.' },
-  { q: 'Is my script or my voice uploaded?', a: 'No. Your script stays in your browser and your voice is processed on your device. The privacy page lists every connection the app makes.' },
+  { q: 'Is my script or my voice uploaded?', a: 'Your script stays in your browser. Audio is processed on your device unless you enable cloud recognition in settings. See the privacy page for details.' },
   {
     q: 'Which browsers work?',
     a: 'Chrome, Edge, Safari and Firefox, on computers, phones and tablets. Voice follow works best in Chrome. The first time you use it elsewhere, it downloads a speech model of about 50 MB.',

@@ -1,6 +1,6 @@
 # DeskPrompter: a free teleprompter that listens
 
-DeskPrompter is a free, open-source teleprompter that runs in your browser. It scrolls when you speak and waits when you pause. Skip a line, ad-lib or go back for another take, and it finds your place again. It works offline, needs no account, and never uploads your script or your voice.
+DeskPrompter is a free, open-source browser teleprompter. Follow your script by voice, scroll while talking, or set a steady speed. No account is needed. Scripts are saved in your browser.
 
 Open the studio: https://deskprompter.pages.dev/studio
 
@@ -12,7 +12,7 @@ Open the studio: https://deskprompter.pages.dev/studio
 
 ## Three ways to scroll
 
-- **Voice follow**: listens as you read and keeps your place. Skip, stumble or ad-lib and it keeps up. Speech recognition runs on your device.
+- **Voice follow**: matches your speech to the script and scrolls to your current line. Speech recognition runs on your device.
 - **Talk to scroll**: scrolls while you are talking and pauses when you stop. It does not need to understand your words, so it works in any language.
 - **Auto scroll**: classic scrolling at a steady speed you choose.
 
@@ -25,7 +25,7 @@ Open the studio: https://deskprompter.pages.dev/studio
 
 ## Private by design
 
-Scripts are stored in your browser. Your microphone audio is processed on your device. There are no accounts, cookies, ads or analytics. Read the details: https://deskprompter.pages.dev/privacy
+Scripts are stored in your browser. Microphone audio is processed on your device unless you enable cloud recognition in settings. There are no accounts, cookies, ads or analytics. Read the details: https://deskprompter.pages.dev/privacy
 
 ## Links
 
