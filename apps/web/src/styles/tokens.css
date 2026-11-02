@@ -1,0 +1,65 @@
+/* ─────────────────────────────────────────────────────────────
+   DeskPrompter · "Last Call"
+   A late-night Ginza bar: lacquer, felt, warm light, one red seal.
+   ───────────────────────────────────────────────────────────── */
+@import '@fontsource-variable/newsreader/opsz.css';
+@import '@fontsource-variable/newsreader/opsz-italic.css';
+@import '@fontsource-variable/geist/index.css';
+@import '@fontsource-variable/geist-mono/index.css';
+
+@font-face {
+  font-family: 'DP Mincho';
+  src: url('../assets/fonts/mincho-subset.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+
+:root {
+  --sumi: #12110f;      /* warm black, the room */
+  --sumi-deep: #0c0b0a;
+  --lacquer: #1c1a17;   /* raised surfaces */
+  --lacquer-2: #24211d;
+  --rule: #2c2925;      /* 1px hairlines */
+  --rule-soft: #211f1b;
+  --washi: #ece6d9;     /* paper, reading text */
+  --washi-dim: #bdb6a7;
+  --smoke: #8c867b;     /* muted UI */
+  --smoke-dim: #5d5850;
+  --felt: #1e3a33;      /* on-air panels */
+  --felt-glow: #2c5a4e;
+  --whisky: #c8924a;    /* lamp light, focus */
+  --whisky-hi: #e8b26a;
+  --shu: #d4553a;       /* the seal: live, record, cue */
+  --shu-deep: #a83f29;
+
+  --serif: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
+  --sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+  --mincho: 'DP Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+  --t-ui: 160ms;
+  --t-panel: 320ms;
+  --radius: 10px;
+
+  --bg: var(--sumi);
+  --fg: var(--washi);
+  --muted: var(--smoke);
+  --surface: var(--lacquer);
+  --line: var(--rule);
+
+  color-scheme: dark;
+}
+
+:root[data-theme='paper'] {
+  --bg: #f3eee3;
+  --fg: #1a1816;
+  --muted: #6b665d;
+  --surface: #faf7f0;
+  --line: #e2dccf;
+  --whisky: #9a6a2c;
+  --shu: #c0442b;
+  --felt: #1c5449;
+  color-scheme: light;
+}

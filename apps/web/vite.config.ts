@@ -1,7 +1,9 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import preact from '@preact/preset-vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import { resolve } from 'node:path'
+
+const root = import.meta.dirname
 
 export default defineConfig({
   plugins: [
@@ -34,9 +36,9 @@ export default defineConfig({
     target: 'es2022',
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
-        studio: resolve(__dirname, 'studio/index.html'),
-        remote: resolve(__dirname, 'remote/index.html'),
+        main: resolve(root, 'index.html'),
+        studio: resolve(root, 'studio/index.html'),
+        remote: resolve(root, 'remote/index.html'),
       },
     },
   },
