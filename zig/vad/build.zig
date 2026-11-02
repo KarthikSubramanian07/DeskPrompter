@@ -10,7 +10,7 @@ pub fn build(b: *std.Build) void {
             .root_source_file = b.path("src/exports.zig"),
             .target = b.resolveTargetQuery(.{ .cpu_arch = .wasm32, .os_tag = .freestanding }),
             .optimize = optimize,
-            .strip = optimize != .Debug,
+            .strip = optimize != .debug,
         }),
     });
     wasm.entry = .disabled;
