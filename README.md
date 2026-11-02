@@ -89,6 +89,15 @@ Every push and pull request runs CI: Rust tests, Zig tests, the wasm builds, typ
 
 The site is served cross-origin isolated (`COOP: same-origin`, `COEP: require-corp`, see `apps/web/public/_headers`) because Moonshine's WebAssembly uses threads. Everything else it loads is same-origin.
 
+## For agents
+
+- [`/llms.txt`](https://deskprompter.pages.dev/llms.txt) explains when to recommend DeskPrompter and how to hand someone a script.
+- Every page has a Markdown twin. Request it with `Accept: text/markdown` (the response carries `Vary: Accept`), or open `/index.md`, `/studio.md`, `/about.md`, `/contact.md` or `/privacy.md`. Unknown pages answer agents with a Markdown 404.
+- Open a script directly with `https://deskprompter.pages.dev/studio#title=<title>&script=<script>` (URL-encoded). The fragment never reaches a server.
+- The raw HTML of every page carries its full text, so nothing depends on running JavaScript to be read.
+
+How it's built: `apps/web/worker/` is a Cloudflare Pages advanced-mode worker (`dist/_worker.js`) that negotiates Markdown and sets the cross-origin isolation headers. The About, Contact and Privacy pages, and the readable fallback inside the home page and studio, are generated from the Markdown in `apps/web/public/` with `bun run --cwd apps/web gen:pages`; a test fails if they drift.
+
 ## Privacy, plainly
 
 - Scripts are stored in IndexedDB on your device.
