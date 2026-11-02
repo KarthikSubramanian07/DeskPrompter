@@ -1,12 +1,28 @@
 import { defineConfig } from 'vitest/config'
+import type { Plugin } from 'vite'
 import preact from '@preact/preset-vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import { resolve } from 'node:path'
 
 const root = import.meta.dirname
 
+/** Clean routes in dev and preview, matching Cloudflare Pages: /studio → studio/index.html. */
+const cleanRoutes = (): Plugin => {
+  const rewrite = (req: { url?: string }, _res: unknown, next: () => void) => {
+    const m = req.url?.match(/^\/(studio|remote)\/?(\?.*)?$/)
+    if (m) req.url = `/${m[1]}/index.html${m[2] ?? ''}`
+    next()
+  }
+  return {
+    name: 'clean-routes',
+    configureServer: (s) => void s.middlewares.use(rewrite),
+    configurePreviewServer: (s) => void s.middlewares.use(rewrite),
+  }
+}
+
 export default defineConfig({
   plugins: [
+    cleanRoutes(),
     preact(),
     VitePWA({
       registerType: 'autoUpdate',
