@@ -41,20 +41,27 @@ Meet the lamp. Its light is the reading line. It nods when you finish a paragrap
 
 ## Architecture
 
-```
-                         ┌────────────────────────── your browser ──────────────────────────┐
-                         │                                                                   │
-   mic ──► MediaStream ──┼─► AudioWorklet ──► zig/vad (wasm) ──► level · speaking ──┐        │
-                         │                                                          │        │
-                         └─► speech engine ──► "and there is only one thing" ──┐    │        │
-                             (Chrome on-device │ Moonshine wasm)                │    │        │
-                                                                                ▼    ▼        │
-   script ──► crates/aligner (Rust → wasm) ──► parse ──► word spans ──►  Prompter engine ──► stage
-                      ▲   feed(hypothesis) ──► cursor · lead · confidence ──┘   (rAF, springs)     │
-                      └──────────────────────────────────────────────────────────────────────┘
-                                                                                  │
-             phone ◄── WebRTC data channel (P2P) ◄── signaling ── crates/relay ◄──┘
-                                                     (Rust · Cloudflare Durable Object)
+```mermaid
+flowchart TB
+  subgraph browser["Your browser · on-device processing"]
+    mic["Microphone"] --> stream["MediaStream"]
+    stream --> worklet["AudioWorklet"] --> vad["Voice detector · Zig / WASM"]
+    vad --> activity["Level and speaking state"]
+    stream --> speech["Speech recognition<br/>Chrome on-device or Moonshine"]
+    script["Your script"] --> parser["Script parser · Rust / WASM"]
+    parser --> spans["Word spans"]
+    speech --> hypothesis["Recognized words"] --> aligner["Voice tracker · Rust / WASM"]
+    parser --> aligner
+    aligner --> position["Cursor, lead and confidence"]
+    spans --> prompter["Prompter engine<br/>Animation frames and springs"]
+    position --> prompter
+    activity --> prompter
+    prompter --> stage["Reading screen"]
+    prompter <--> host["Device link"]
+  end
+  host <-->|"WebRTC · direct connection"| phone["Phone remote"]
+  host <-.->|"Signaling / fallback"| relay["Relay · Rust<br/>Cloudflare Durable Object"]
+  relay <-.->|"Signaling / fallback"| phone
 ```
 
 | Path | Language | What it does |
