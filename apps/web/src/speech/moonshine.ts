@@ -12,6 +12,7 @@
  * getUserMedia), downmix and resample to 16 kHz inside the worklet, and post
  * the PCM over a MessageChannel straight into the worker.
  */
+import { registerAudioContext } from '../audio/unlock'
 import type { SpeechEngine, SpeechEngineEvents, SpeechEngineState, SpeechResult } from '../core/contracts'
 import { Emitter, cleanText } from './emitter'
 import { rankHints } from './hints'
@@ -205,8 +206,8 @@ export class MoonshineEngine implements SpeechEngine {
       if (gen !== this.gen) return
       if (this.terms.length) send(h, { t: 'keyterms', terms: this.terms })
 
-      const ctx = (this.ctx = new AudioContext({ latencyHint: 'interactive' }))
-      if (ctx.state === 'suspended') await ctx.resume()
+      // Never await resume(): on iOS it only settles after the next tap.
+      const ctx = (this.ctx = registerAudioContext(new AudioContext({ latencyHint: 'interactive' })))
       const url = URL.createObjectURL(new Blob([CAPTURE_WORKLET], { type: 'text/javascript' }))
       try {
         await ctx.audioWorklet.addModule(url)

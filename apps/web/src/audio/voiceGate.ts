@@ -5,6 +5,7 @@
  * start-up or later), it quietly swaps to `createLevelMeter`, a pure Web Audio fallback
  * built on an AnalyserNode, so the app never loses its meter or breath mode.
  */
+import { registerAudioContext } from './unlock'
 import type { VoiceGate, VoiceSample } from '../core/contracts'
 import vadUrl from '../wasm/generated/vad.wasm?url'
 import workletUrl from './vad.worklet.ts?worker&url'
@@ -61,7 +62,7 @@ interface Ctx {
 
 function contextFor(opts: VoiceGateOptions): Ctx {
   if (opts.audioContext) return { ctx: opts.audioContext, owned: false }
-  return { ctx: new AudioContext({ latencyHint: 'interactive' }), owned: true }
+  return { ctx: registerAudioContext(new AudioContext({ latencyHint: 'interactive' })), owned: true }
 }
 
 function release({ ctx, owned }: Ctx) {

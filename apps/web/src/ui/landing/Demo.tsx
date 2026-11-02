@@ -137,7 +137,7 @@ export function Demo() {
         </div>
         <div class="demo-status">
           <span class={`demo-dot ${speaking ? 'on' : ''}`} />
-          {speaking ? 'Listening on this device' : wi < 0 ? 'Ready' : 'Waiting for you'}
+          <span class="demo-status-text">{speaking ? 'Listening on this device' : wi < 0 ? 'Ready' : 'Waiting for you'}</span>
         </div>
       </div>
       <p class={`demo-note hand ${note ? 'show' : ''}`} aria-live="polite">

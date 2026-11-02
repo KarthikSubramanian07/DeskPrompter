@@ -37,6 +37,18 @@ export interface StageProps {
   mirror?: { x: boolean; y: boolean }
 }
 
+function useNarrow(px: number): boolean {
+  const q = useRef(typeof matchMedia === 'function' ? matchMedia(`(max-width: ${px}px)`) : null).current
+  const v = useSignal(q?.matches ?? false)
+  useEffect(() => {
+    if (!q) return
+    const on = () => (v.value = q.matches)
+    q.addEventListener('change', on)
+    return () => q.removeEventListener('change', on)
+  }, [])
+  return v.value
+}
+
 const KEYS: [string, string][] = [
   ['space', 'Play or pause'],
   ['↑ ↓', 'Faster or slower (lines in voice mode)'],
@@ -69,6 +81,10 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
   const help = useSignal(false)
   const wordAt = useSignal(0)
   const s = settings.value
+  // On phone-width screens the reading column needs every pixel; the lamp sits out.
+  const narrow = useNarrow(600)
+  // The lamp hangs in the side margin; when the column leaves no room, it sits out.
+  const lampFits = useSignal(true)
   const listener = useRef<Listener | null>(null)
   const parsedRef = useRef(parsed)
   parsedRef.current = parsed
@@ -177,6 +193,8 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
         const h = vp.clientHeight
         const colW = col.clientWidth
         const left = (w - colW) / 2
+        const fits = left >= 150
+        if (fits !== lampFits.value) lampFits.value = fits
         const eyeY = h * settings.value.eyeline
         handle.anchor = { x: Math.max(70, left * 0.42), y: 14, scale: Math.min(0.95, Math.max(0.55, h / 980)) }
         handle.pool = { x: w / 2, y: eyeY, w: colW * 1.15, h: settings.value.fontSize * settings.value.lineHeight * 1.9 }
@@ -194,6 +212,72 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
     return () => cancelAnimationFrame(raf)
   }, [])
 
+  // Touch: drag the script with a finger, like a page. A short tap still taps words.
+  useEffect(() => {
+    if (display) return
+    const vp = viewport.current!
+    let id: number | null = null
+    let lastY = 0
+    let moved = 0
+    const down = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse') return
+      id = e.pointerId
+      lastY = e.clientY
+      moved = 0
+    }
+    const move = (e: PointerEvent) => {
+      if (e.pointerId !== id) return
+      const dy = e.clientY - lastY
+      lastY = e.clientY
+      moved += Math.abs(dy)
+      if (moved < 6) return
+      const flip = settings.value.mirrorY ? -1 : 1
+      prompterRef.current?.nudge(-dy * flip)
+    }
+    const up = (e: PointerEvent) => {
+      if (e.pointerId !== id) return
+      id = null
+      if (moved >= 6) {
+        const p = prompterRef.current
+        if (p) p.events.manualSeek?.(p.wordAtLine())
+      }
+    }
+    vp.addEventListener('pointerdown', down)
+    vp.addEventListener('pointermove', move)
+    vp.addEventListener('pointerup', up)
+    vp.addEventListener('pointercancel', up)
+    return () => {
+      vp.removeEventListener('pointerdown', down)
+      vp.removeEventListener('pointermove', move)
+      vp.removeEventListener('pointerup', up)
+      vp.removeEventListener('pointercancel', up)
+    }
+  }, [])
+
+  // Keep the screen awake while you're on stage (phones and tablets lock mid-read otherwise).
+  useEffect(() => {
+    if (!('wakeLock' in navigator)) return
+    let lock: WakeLockSentinel | null = null
+    let alive = true
+    const acquire = async () => {
+      if (!alive || lock || document.visibilityState !== 'visible') return
+      try {
+        lock = await navigator.wakeLock.request('screen')
+        lock.addEventListener('release', () => (lock = null))
+        if (!alive) void lock.release()
+      } catch {
+        /* denied or unsupported: reading still works */
+      }
+    }
+    void acquire()
+    document.addEventListener('visibilitychange', acquire)
+    return () => {
+      alive = false
+      document.removeEventListener('visibilitychange', acquire)
+      void lock?.release()
+    }
+  }, [])
+
   // HUD autohide.
   useEffect(() => {
     if (display) return
@@ -206,9 +290,11 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
       }, 2600)
     }
     window.addEventListener('pointermove', show)
+    window.addEventListener('pointerdown', show)
     show()
     return () => {
       window.removeEventListener('pointermove', show)
+      window.removeEventListener('pointerdown', show)
       clearTimeout(t)
     }
   }, [])
@@ -413,7 +499,7 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
             <span class="stage-tick r" />
           </div>
         </div>
-        {s.lamp && <Lamp handle={handle} class="stage-lamp" />}
+        {s.lamp && !narrow && lampFits.value && <Lamp handle={handle} class="stage-lamp" />}
       </div>
 
       {s.camera && !display && <CameraCheck />}
