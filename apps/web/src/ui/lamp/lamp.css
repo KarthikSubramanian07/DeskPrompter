@@ -12,7 +12,8 @@
   transition: opacity 400ms var(--ease);
 }
 .lamp-tag {
-  font-family: var(--mincho);
+  font-family: var(--hand);
   font-size: 11px;
-  fill: #1c1a17;
+  font-weight: 600;
+  fill: #1c1b18;
 }

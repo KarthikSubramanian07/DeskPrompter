@@ -10,8 +10,6 @@
 import type { ParsedScript, PrompterMode } from './contracts'
 import { clamp, smoothDamp, type Damped } from './springs'
 
-const KANJI_NUM = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
-
 export interface PrompterOptions {
   mode: PrompterMode
   speed: number // 1..10
@@ -99,7 +97,7 @@ export class Prompter {
       if (b.kind === 'heading') {
         const n = document.createElement('span')
         n.className = 'pr-head-n'
-        n.textContent = KANJI_NUM[headingN++ % KANJI_NUM.length]!
+        n.textContent = String(++headingN).padStart(2, '0')
         el.append(n)
       }
       let firstWord = -1
@@ -110,7 +108,7 @@ export class Prompter {
         if (t.kind === 'cue') {
           s.className = 'pr-cue'
           const inner = t.text.slice(1, -1).trim()
-          s.textContent = /^(pause|beat|breathe?)$/i.test(inner) ? `間 ${inner}` : inner
+          s.textContent = inner
         } else if (t.wi >= 0) {
           s.className = 'w'
           s.dataset.wi = String(t.wi)
