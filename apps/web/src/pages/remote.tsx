@@ -5,6 +5,7 @@
  */
 
 import '../styles/base.css'
+import '../pwa'
 import './remote.css'
 
 import { render } from 'preact'

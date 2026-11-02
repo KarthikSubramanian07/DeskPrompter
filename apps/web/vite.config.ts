@@ -35,7 +35,9 @@ export default defineConfig({
     cleanRoutes(),
     preact(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // Updates are applied by src/pwa.ts, which waits until you're off the stage.
+      registerType: 'prompt',
+      injectRegister: false,
       includeAssets: ['icon-192.png', 'apple-touch-icon.png', 'robots.txt'],
       manifest: {
         name: 'DeskPrompter',

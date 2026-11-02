@@ -232,7 +232,7 @@ mod tests {
 
     #[test]
     fn non_ascii_has_no_key() {
-        assert_eq!(metaphone("東"), "");
+        assert_eq!(metaphone("北"), "");
         assert_eq!(metaphone("mp3"), "");
         assert_eq!(metaphone(""), "");
     }

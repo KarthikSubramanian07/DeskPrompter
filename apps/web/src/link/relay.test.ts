@@ -210,7 +210,7 @@ describe('createRemoteLink', () => {
     const host = make('host', 'host00001')
     const disp = make('display', 'display01')
     await waitFor(() => disp.link.status === 'relay', 'relay')
-    const text = '舞台の照明が落ちる。 [pause] Now the second act begins. '.repeat(2500)
+    const text = 'Τα φώτα της σκηνής χαμηλώνουν. [pause] Now the second act begins. '.repeat(2500)
     host.link.send({ t: 'script', title: 'Act II', text })
     await waitFor(() => disp.inbox.some((m) => m.t === 'script'), 'script', 5000)
     expect(disp.inbox.find((m) => m.t === 'script')).toEqual({ t: 'script', title: 'Act II', text })

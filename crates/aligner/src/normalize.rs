@@ -488,7 +488,7 @@ mod tests {
     #[test]
     fn cjk_splits_per_character() {
         assert_eq!(u("你好世界"), ["你", "好", "世", "界"]);
-        assert_eq!(u("東京tower"), ["東", "京", "tower"]);
+        assert_eq!(u("北京tower"), ["北", "京", "tower"]);
     }
 
     #[test]

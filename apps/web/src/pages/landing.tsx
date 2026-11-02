@@ -1,6 +1,7 @@
 import { render } from 'preact'
 import { useEffect, useRef } from 'preact/hooks'
 import '../styles/base.css'
+import '../pwa'
 import './landing.css'
 import { createLampHandle, Lamp } from '../ui/lamp/Lamp'
 import { Mark } from '../ui/Mark'

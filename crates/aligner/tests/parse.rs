@@ -33,7 +33,7 @@ fn texts(p: &ParsedScript) -> Vec<(String, i32)> {
 
 #[test]
 fn utf16_offsets_survive_emoji_accents_cjk_and_typography() {
-    let script = "🎬 Ça va? “Smart quotes” and em—dashes… 東京タワー 👩🏽‍💻 naïve café\n\nZwölf Äpfel — 🚀🚀 fin.";
+    let script = "🎬 Ça va? “Smart quotes” and em—dashes… 北京故宫 👩🏽‍💻 naïve café\n\nZwölf Äpfel — 🚀🚀 fin.";
     let p = parse_script(script);
     check_offsets(script, &p);
     let t = texts(&p);
@@ -42,7 +42,7 @@ fn utf16_offsets_survive_emoji_accents_cjk_and_typography() {
     assert_eq!(t[1], ("Ça".into(), 0));
     assert_eq!(t[3], ("“Smart".into(), 2));
     assert!(t.iter().any(|(s, wi)| s == "em—dashes…" && *wi >= 0));
-    assert!(t.iter().any(|(s, wi)| s == "東京タワー" && *wi >= 0));
+    assert!(t.iter().any(|(s, wi)| s == "北京故宫" && *wi >= 0));
     assert!(t.iter().any(|(s, wi)| s == "👩🏽‍💻" && *wi == -1));
     assert!(t.iter().any(|(s, wi)| s == "—" && *wi == -1));
     assert_eq!(p.blocks.len(), 2);
