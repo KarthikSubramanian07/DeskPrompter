@@ -7,34 +7,29 @@ import { Mark } from '../ui/Mark'
 
 const FEATURES = [
   {
-    n: '一',
-    title: 'It listens, and it keeps a secret.',
-    body: 'Voice-follow scrolling matches what you say against your script, word by word. Skip a line, ad-lib, stumble — it finds you again. Recognition runs on your device.',
-    tag: 'rust → wasm · on-device speech',
+    title: 'It listens, and keeps it to itself.',
+    body: 'Voice-follow matches what you say against your script, word by word. Skip a line, stumble, ad-lib, go back — it finds you again. Recognition runs on your device.',
+    tag: 'Rust → WebAssembly',
   },
   {
-    n: '二',
     title: 'It breathes with you.',
     body: 'Breath mode needs no speech recognition at all. A tiny voice detector scrolls while you talk and glides to a stop when you pause.',
-    tag: 'zig → wasm · audio worklet',
+    tag: 'Zig → WebAssembly',
   },
   {
-    n: '三',
     title: 'Your phone is the clicker.',
-    body: 'Scan a code and your phone becomes a remote. Commands travel peer to peer; your script never leaves the laptop.',
-    tag: 'webrtc · rust relay on the edge',
+    body: 'Scan a code and your phone becomes the remote. Commands travel peer to peer; your script stays on the laptop.',
+    tag: 'WebRTC',
   },
   {
-    n: '四',
-    title: 'Glass-ready.',
-    body: 'Mirror for beam-splitter rigs, pin the reading line under the lens, open a talent window on a second screen.',
-    tag: 'mirror · eyeline · second screen',
+    title: 'Ready for the glass.',
+    body: 'Mirror for beam-splitter rigs, park the reading line right under the lens, and open a second window for the talent screen.',
+    tag: 'Mirror · eyeline · second screen',
   },
   {
-    n: '五',
     title: 'Captions on the way out.',
-    body: 'Every word you read is timed. Export SRT or VTT and drop it straight onto your edit timeline.',
-    tag: 'srt · vtt',
+    body: 'Every word you read gets a timestamp. Export SRT or VTT and drop it straight onto your edit timeline.',
+    tag: 'SRT · VTT',
   },
 ]
 
@@ -116,8 +111,12 @@ function Hero() {
     <section class="hero" ref={stage}>
       <div class="hero-grid" aria-hidden="true" />
       <div class="hero-copy">
-        <p class="label hero-eyebrow">
-          <span class="dot" /> a teleprompter that listens · <span class="kanji">行灯</span>
+        <p class="hero-note hand" aria-hidden="true">
+          go on, read it out loud
+          <svg viewBox="0 0 120 70" width="96" height="56" class="hero-arrow">
+            <path d="M6 8 C 30 4, 62 10, 78 30 S 92 58, 104 62" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+            <path d="M92 60 L105 63 L99 51" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
         </p>
         <h1 class="hero-title">
           <span class="dim" aria-hidden="true">
@@ -136,13 +135,17 @@ function Hero() {
           sends your words anywhere.
         </p>
         <div class="hero-cta">
-          <a class="btn btn-shu" href="/studio">
-            <span class="kanji">開演</span> Open the studio
+          <a class="btn btn-clay" href="/studio">
+            Open the studio
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+              <path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
           </a>
           <a class="btn btn-ghost" href="https://github.com/KarthikSubramanian07/DeskPrompter">
             Read the source
           </a>
         </div>
+        <p class="hero-fine">Free. Works offline. Nothing you say leaves your device.</p>
       </div>
       <Lamp handle={handle} />
     </section>
@@ -158,64 +161,71 @@ function Landing() {
           <span>DeskPrompter</span>
         </a>
         <nav>
-          <a href="#how" class="label">
+          <a href="#how">
             How it works
           </a>
-          <a href="/studio" class="label">
+          <a href="/studio">
             Studio
           </a>
-          <a href="https://github.com/KarthikSubramanian07/DeskPrompter" class="label">
+          <a href="https://github.com/KarthikSubramanian07/DeskPrompter">
             GitHub
           </a>
         </nav>
       </header>
       <main>
         <Hero />
-        <section class="menu" id="how">
-          <header class="menu-head">
-            <p class="label">The menu</p>
+        <section class="features" id="how">
+          <header class="features-head">
             <h2>
-              Five things on the house<span class="shu">.</span>
+              A good prompter should feel like it&rsquo;s <em>reading along</em> with you.
             </h2>
           </header>
-          <ol class="menu-list">
-            {FEATURES.map((f) => (
-              <li class="menu-item" key={f.n}>
-                <span class="menu-n kanji">{f.n}</span>
+          <ol class="features-list">
+            {FEATURES.map((f, i) => (
+              <li class="feature" key={f.title}>
+                <span class="feature-n">{i + 1}</span>
                 <div>
                   <h3>{f.title}</h3>
                   <p>{f.body}</p>
                 </div>
-                <span class="label menu-tag">{f.tag}</span>
+                <span class="feature-tag">{f.tag}</span>
               </li>
             ))}
           </ol>
         </section>
-        <section class="tab">
-          <div class="tab-card">
-            <p class="label">Your tab</p>
-            <div class="tab-row">
-              <span>Voice-follow, mirroring, phone remote, captions</span>
-              <span class="leader" />
-              <span class="mono">¥0</span>
-            </div>
-            <div class="tab-row">
-              <span>Accounts, uploads, tracking</span>
-              <span class="leader" />
-              <span class="mono">none</span>
-            </div>
-            <div class="tab-row total">
-              <span>Total</span>
-              <span class="leader" />
-              <span class="mono">¥0</span>
-            </div>
-            <p class="tab-note">Tip the bartender with a star on GitHub. MIT licensed.</p>
+        <section class="fine">
+          <div class="fine-card">
+            <p class="hand fine-title">the fine print</p>
+            <dl>
+              <div>
+                <dt>Price</dt>
+                <dd>Free, forever</dd>
+              </div>
+              <div>
+                <dt>Accounts</dt>
+                <dd>None</dd>
+              </div>
+              <div>
+                <dt>Uploads</dt>
+                <dd>None — scripts live in your browser</dd>
+              </div>
+              <div>
+                <dt>Works offline</dt>
+                <dd>Yes, install it like an app</dd>
+              </div>
+              <div>
+                <dt>License</dt>
+                <dd>MIT</dd>
+              </div>
+            </dl>
           </div>
         </section>
       </main>
       <footer class="foot">
-        <span class="label">Made late at night · MIT</span>
-        <span class="kanji foot-kanpai">乾杯</span>
+        <span class="foot-brand">
+          <Mark size={18} /> DeskPrompter
+        </span>
+        <span>Made late at night. Open source under MIT.</span>
       </footer>
     </div>
   )
