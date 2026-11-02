@@ -1,3 +1,4 @@
+import { downloadScript } from '../core/downloadScript'
 import { render } from 'preact'
 import { useComputed, useSignal } from '@preact/signals'
 import { useEffect, useMemo } from 'preact/hooks'
@@ -5,7 +6,7 @@ import '../styles/base.css'
 import '../pwa'
 import './studio.css'
 import { aligner, loadAlignerOnce, parseScript } from '../core/parser'
-import { currentId, hydrate, newScript, ready, scripts, settings } from '../core/store'
+import { currentId, hydrate, newScript, ready, scripts, settings, saveStatus, saveNow } from '../core/store'
 import { Mark } from '../ui/Mark'
 import { Desk, deskSheet } from '../ui/studio/Desk'
 import { Stage } from '../ui/studio/Stage'
@@ -49,6 +50,7 @@ function Studio() {
     const onKey = (e: KeyboardEvent) => {
       if (view.value === 'desk' && (e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault()
+        if (!parseScript(scripts.value.find((s) => s.id === currentId.value)?.text ?? '').wordCount) return
         dismissGuide()
         view.value = 'stage'
       }
@@ -78,10 +80,12 @@ function Studio() {
               {bridge && <TalentButton />}
               {bridge && <PairButton bridge={bridge} />}
               <span class="bar-privacy" title="Scripts are stored in this browser. Nothing is uploaded.">
-                <span class="dot-sage" /> Saved on this device
+                <span class="dot-sage" /> {saveStatus.value === 'saving' ? 'Saving…' : saveStatus.value === 'error' ? 'Not saved' : 'Saved on this device'}
               </span>
               <button
                 class="btn-go"
+                disabled={parsed.wordCount === 0}
+                title={parsed.wordCount === 0 ? 'Add some script text to start reading' : 'Start reading'}
                 onClick={() => {
                   dismissGuide()
                   view.value = 'stage'
@@ -95,6 +99,13 @@ function Studio() {
               </button>
             </div>
           </header>
+          {saveStatus.value === 'error' && (
+            <div class="save-error" role="alert">
+              <span>Browser storage is unavailable. Keep this tab open or download a copy of your script.</span>
+              <button onClick={() => script.value && downloadScript(script.value)}>Download script</button>
+              <button onClick={() => void saveNow()}>Try saving again</button>
+            </div>
+          )}
           <Desk />
         </>
       ) : (

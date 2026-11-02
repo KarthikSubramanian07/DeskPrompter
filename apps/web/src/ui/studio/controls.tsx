@@ -63,11 +63,23 @@ export function Segmented<T extends string>(props: {
 }) {
   return (
     <div class="seg" role="radiogroup" aria-label={props.label}>
-      {props.options.map((o) => (
+      {props.options.map((o, index) => (
         <button
           type="button"
           role="radio"
           aria-checked={props.value === o.value}
+          tabIndex={props.value === o.value ? 0 : -1}
+          onKeyDown={(e) => {
+            let next: number
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (index + 1) % props.options.length
+            else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (index - 1 + props.options.length) % props.options.length
+            else if (e.key === 'Home') next = 0
+            else if (e.key === 'End') next = props.options.length - 1
+            else return
+            e.preventDefault()
+            props.onChange(props.options[next]!.value)
+            e.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="radio"]')[next]?.focus()
+          }}
           class={`seg-btn ${props.value === o.value ? 'on' : ''}`}
           title={o.title}
           onClick={() => props.onChange(o.value)}
