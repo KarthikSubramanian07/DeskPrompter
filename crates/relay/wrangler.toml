@@ -1,0 +1,20 @@
+name = "deskprompter-relay"
+main = "build/index.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+preview_urls = false
+
+[build]
+command = "cargo install -q worker-build@^0.8 && worker-build --release"
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "Room"
+
+# Free plan: Durable Objects must be SQLite-backed.
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Room"]
+
+[observability]
+enabled = true
