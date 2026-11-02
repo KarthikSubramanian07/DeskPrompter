@@ -4,9 +4,7 @@
  * RemoteCommands. Built for one thumb: the controls sit at the bottom.
  */
 
-import '@fontsource-variable/geist'
-import '@fontsource-variable/geist-mono'
-import '@fontsource-variable/newsreader'
+import '../styles/base.css'
 import './remote.css'
 
 import { render } from 'preact'

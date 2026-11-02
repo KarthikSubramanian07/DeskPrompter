@@ -1,20 +1,20 @@
 /* Phone remote. Tokens up top so the page is easy to restyle. */
 
 :root {
-  --r-bg: #12110f;
-  --r-surface: #1b1a17;
-  --r-raised: #24221e;
-  --r-ink: #ece6d9;
-  --r-muted: #9a9284;
+  --r-bg: var(--ink);
+  --r-surface: var(--surface-1);
+  --r-raised: var(--surface-2);
+  --r-ink: var(--paper);
+  --r-muted: var(--stone);
   --r-faint: #3a3731;
-  --r-accent: #d4553a;
-  --r-accent-ink: #12110f;
-  --r-ok: #8fb573;
-  --r-warn: #d9a441;
+  --r-accent: var(--clay);
+  --r-accent-ink: #1a0f0a;
+  --r-ok: #7fae8f;
+  --r-warn: var(--amber);
   --r-radius: 18px;
-  --r-font: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
-  --r-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
-  --r-serif: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
+  --r-font: var(--sans);
+  --r-mono: var(--sans);
+  --r-serif: var(--serif);
   color-scheme: dark;
 }
 
@@ -57,8 +57,6 @@ body {
 .remote__code {
   font-family: var(--r-mono);
   font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--r-muted);
 }
 
@@ -289,8 +287,6 @@ body {
   min-height: 48px;
   font-family: var(--r-mono);
   font-size: 12px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--r-muted);
 }
 
@@ -318,7 +314,6 @@ body {
   min-height: 112px;
   font-size: 20px;
   font-weight: 650;
-  letter-spacing: 0.01em;
   border-radius: 22px;
 }
 
@@ -376,9 +371,7 @@ body {
   min-width: 0;
   font-family: var(--r-mono);
   font-size: 32px;
-  letter-spacing: 0.2em;
   text-align: center;
-  text-transform: uppercase;
   padding: 16px;
   border-radius: 14px;
   border: 1px solid var(--r-faint);
