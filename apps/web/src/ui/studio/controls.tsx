@@ -1,13 +1,10 @@
 /** Small, quiet form controls in the house style. */
 import type { ComponentChildren } from 'preact'
 
-export function Section({ label, kanji, children }: { label: string; kanji?: string; children: ComponentChildren }) {
+export function Section({ label, children }: { label: string; children: ComponentChildren }) {
   return (
     <section class="setup-sec">
-      <h3 class="label setup-label">
-        {kanji && <span class="kanji">{kanji}</span>}
-        {label}
-      </h3>
+      <h3 class="setup-label">{label}</h3>
       {children}
     </section>
   )
@@ -60,7 +57,7 @@ export function Toggle({ label, checked, onChange, hint }: { label: string; chec
 
 export function Segmented<T extends string>(props: {
   value: T
-  options: { value: T; label: string; kanji?: string; title?: string }[]
+  options: { value: T; label: string; icon?: ComponentChildren; title?: string }[]
   onChange: (v: T) => void
   label: string
 }) {
@@ -75,7 +72,7 @@ export function Segmented<T extends string>(props: {
           title={o.title}
           onClick={() => props.onChange(o.value)}
         >
-          {o.kanji && <span class="kanji">{o.kanji}</span>}
+          {o.icon && <span class="seg-icon">{o.icon}</span>}
           <span>{o.label}</span>
         </button>
       ))}
