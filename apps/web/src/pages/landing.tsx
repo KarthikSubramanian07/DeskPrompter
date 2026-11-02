@@ -5,34 +5,8 @@ import '../pwa'
 import './landing.css'
 import { createLampHandle, Lamp } from '../ui/lamp/Lamp'
 import { Mark } from '../ui/Mark'
-
-const FEATURES = [
-  {
-    title: 'It listens, and keeps it to itself.',
-    body: 'Voice-follow matches what you say against your script, word by word. Skip a line, stumble, ad-lib, go back — it finds you again. Recognition runs on your device.',
-    tag: 'Rust → WebAssembly',
-  },
-  {
-    title: 'It breathes with you.',
-    body: 'Breath mode needs no speech recognition at all. A tiny voice detector scrolls while you talk and glides to a stop when you pause.',
-    tag: 'Zig → WebAssembly',
-  },
-  {
-    title: 'Your phone is the clicker.',
-    body: 'Scan a code and your phone becomes the remote. Commands travel peer to peer; your script stays on the laptop.',
-    tag: 'WebRTC',
-  },
-  {
-    title: 'Ready for the glass.',
-    body: 'Mirror for beam-splitter rigs, park the reading line right under the lens, and open a second window for the talent screen.',
-    tag: 'Mirror · eyeline · second screen',
-  },
-  {
-    title: 'Captions on the way out.',
-    body: 'Every word you read gets a timestamp. Export SRT or VTT and drop it straight onto your edit timeline.',
-    tag: 'SRT · VTT',
-  },
-]
+import { ModeIcon } from '../ui/icons'
+import { Demo } from '../ui/landing/Demo'
 
 function Hero() {
   const stage = useRef<HTMLDivElement>(null)
@@ -46,7 +20,7 @@ function Hero() {
       const r = el.getBoundingClientRect()
       const small = r.width < 760
       handle.anchor = small
-        ? { x: r.width * 0.2, y: r.height * 0.96, scale: 0.78 }
+        ? { x: r.width * 0.16, y: r.height * 0.985, scale: 0.56 }
         : { x: Math.max(110, r.width * 0.085), y: r.height * 0.93, scale: Math.min(1.22, r.height / 640) }
     }
     layout()
@@ -109,7 +83,7 @@ function Hero() {
   }, [])
 
   return (
-    <section class="hero" ref={stage}>
+    <section class="hero night" ref={stage}>
       <div class="hero-grid" aria-hidden="true" />
       <div class="hero-copy">
         <p class="hero-note hand" aria-hidden="true">
@@ -153,81 +127,173 @@ function Hero() {
   )
 }
 
+const MODES = [
+  {
+    mode: 'voice' as const,
+    title: 'Voice',
+    body: 'Follows your words. Skip a line, ad-lib, go back for another take: it finds your place again. Recognition runs on your device.',
+  },
+  {
+    mode: 'breath' as const,
+    title: 'Breath',
+    body: 'No transcription at all. A tiny voice detector scrolls while you talk and glides to a stop when you pause.',
+  },
+  {
+    mode: 'manual' as const,
+    title: 'Steady',
+    body: 'The classic glide, set in words per minute. Changes ease in, never jump. Space to pause, arrows to adjust.',
+  },
+]
+
+const EXTRAS = [
+  { title: 'Your phone is the clicker', body: 'Scan a code and your phone becomes the remote, with the current line and time left. It talks to your laptop directly.' },
+  { title: 'Ready for the glass', body: 'Mirror for beam-splitter rigs, put the reading line right under the lens, and send a talent window to a second screen.' },
+  { title: 'Captions on the way out', body: 'Every word you read in voice mode is timed. Download SRT or VTT and drop it on your edit timeline.' },
+  { title: 'Works offline', body: 'Install it like an app. Scripts live in your browser, and nothing is uploaded, ever.' },
+]
+
+const PIPE = [
+  { k: 'Microphone', v: 'stays in the tab' },
+  { k: 'Voice gate', v: 'Zig → wasm · 3 KB' },
+  { k: 'Speech engine', v: 'on-device' },
+  { k: 'Aligner', v: 'Rust → wasm · 113 KB' },
+  { k: 'Stage', v: 'springs at 60 fps' },
+]
+
 function Landing() {
+  const hero = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const nav = document.querySelector('.nav') as HTMLElement
+    const io = new IntersectionObserver(([e]) => nav.classList.toggle('on-day', !e?.isIntersecting), { rootMargin: '-64px 0px 0px 0px' })
+    io.observe(hero.current!.querySelector('.hero')!)
+    return () => io.disconnect()
+  }, [])
+
   return (
-    <div class="landing grain">
+    <div class="landing">
       <header class="nav">
         <a class="brand" href="/">
           <Mark />
           <span>DeskPrompter</span>
         </a>
         <nav>
-          <a href="#how">
-            How it works
-          </a>
-          <a href="/studio">
-            Studio
-          </a>
-          <a href="https://github.com/KarthikSubramanian07/DeskPrompter">
-            GitHub
+          <a href="#follow">How it works</a>
+          <a href="https://github.com/KarthikSubramanian07/DeskPrompter">GitHub</a>
+          <a class="nav-cta" href="/studio">
+            Open the studio
           </a>
         </nav>
       </header>
       <main>
-        <Hero />
-        <section class="features" id="how">
-          <header class="features-head">
-            <h2>
-              A good prompter should feel like it&rsquo;s <em>reading along</em> with you.
-            </h2>
-          </header>
-          <ol class="features-list">
-            {FEATURES.map((f, i) => (
-              <li class="feature" key={f.title}>
-                <span class="feature-n">{i + 1}</span>
-                <div>
-                  <h3>{f.title}</h3>
-                  <p>{f.body}</p>
+        <div ref={hero}>
+          <Hero />
+        </div>
+        <div class="day">
+          <section class="sec follow" id="follow">
+            <div class="sec-head">
+              <p class="eyebrow">Watch it follow</p>
+              <h2>
+                It reads <em>along</em> with you.
+              </h2>
+              <p class="sec-sub">
+                The words you&rsquo;ve said fall back, the next ones step forward, and the lamp keeps the line you&rsquo;re on in the light. Skip a sentence and it skips with you. Stop talking and it waits.
+              </p>
+            </div>
+            <Demo />
+          </section>
+
+          <section class="sec modes">
+            <div class="sec-head">
+              <p class="eyebrow">Three ways to scroll</p>
+              <h2>Pick how it keeps time.</h2>
+            </div>
+            <div class="mode-grid">
+              {MODES.map((m) => (
+                <article class={`mode-card mode-${m.mode}`} key={m.mode}>
+                  <span class="mode-icon">
+                    <ModeIcon mode={m.mode} size={22} />
+                  </span>
+                  <h3>{m.title}</h3>
+                  <p>{m.body}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section class="sec extras">
+            <div class="extra-grid">
+              {EXTRAS.map((x) => (
+                <div class="extra" key={x.title}>
+                  <h3>{x.title}</h3>
+                  <p>{x.body}</p>
                 </div>
-                <span class="feature-tag">{f.tag}</span>
-              </li>
-            ))}
-          </ol>
-        </section>
-        <section class="fine">
-          <div class="fine-card">
-            <p class="hand fine-title">the fine print</p>
-            <dl>
-              <div>
-                <dt>Price</dt>
-                <dd>Free, forever</dd>
-              </div>
-              <div>
-                <dt>Accounts</dt>
-                <dd>None</dd>
-              </div>
-              <div>
-                <dt>Uploads</dt>
-                <dd>None — scripts live in your browser</dd>
-              </div>
-              <div>
-                <dt>Works offline</dt>
-                <dd>Yes, install it like an app</dd>
-              </div>
-              <div>
-                <dt>License</dt>
-                <dd>MIT</dd>
-              </div>
-            </dl>
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+
+          <section class="sec under">
+            <div class="sec-head">
+              <p class="eyebrow">Under the desk</p>
+              <h2>Built to be fast, small, and private.</h2>
+              <p class="sec-sub">
+                Your voice goes through a pipeline that runs entirely in the tab. The heavy parts are compiled to WebAssembly: Rust for the matching, Zig for the audio thread.
+              </p>
+            </div>
+            <ol class="pipe">
+              {PIPE.map((p, i) => (
+                <li key={p.k}>
+                  <span class="pipe-k">{p.k}</span>
+                  <span class="pipe-v">{p.v}</span>
+                  {i < PIPE.length - 1 && <span class="pipe-arrow" aria-hidden="true" />}
+                </li>
+              ))}
+            </ol>
+            <p class="pipe-note hand">nothing on this line touches a server</p>
+          </section>
+
+          <section class="sec fine">
+            <div class="fine-card">
+              <p class="hand fine-title">the fine print</p>
+              <dl>
+                <div>
+                  <dt>Price</dt>
+                  <dd>Free, forever</dd>
+                </div>
+                <div>
+                  <dt>Accounts</dt>
+                  <dd>None</dd>
+                </div>
+                <div>
+                  <dt>Uploads</dt>
+                  <dd>None. Scripts live in your browser</dd>
+                </div>
+                <div>
+                  <dt>Source</dt>
+                  <dd>
+                    <a href="https://github.com/KarthikSubramanian07/DeskPrompter">Open, MIT</a>
+                  </dd>
+                </div>
+              </dl>
+            </div>
+            <div class="fine-cta">
+              <h2>Ready when you are.</h2>
+              <a class="btn btn-clay" href="/studio">
+                Open the studio
+                <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+                  <path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </a>
+            </div>
+          </section>
+
+          <footer class="foot">
+            <span class="foot-brand">
+              <Mark size={18} /> DeskPrompter
+            </span>
+            <span class="foot-note">Made late at night. Open source under MIT.</span>
+          </footer>
+        </div>
       </main>
-      <footer class="foot">
-        <span class="foot-brand">
-          <Mark size={18} /> DeskPrompter
-        </span>
-        <span>Made late at night. Open source under MIT.</span>
-      </footer>
     </div>
   )
 }
