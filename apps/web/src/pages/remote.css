@@ -67,18 +67,16 @@ body {
 }
 
 .remote__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: var(--r-ink);
+  font-family: var(--serif);
+  font-size: 17px;
 }
 
-.remote__brand::before {
-  content: '';
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  margin-right: 8px;
-  border-radius: 2px;
-  background: var(--r-accent);
-  vertical-align: 1px;
+.remote__brand .mark {
+  color: var(--r-accent);
 }
 
 .remote__code {
