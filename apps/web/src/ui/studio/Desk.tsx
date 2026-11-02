@@ -23,6 +23,8 @@ import { caretXY } from './caret'
 import { IMPORT_ACCEPT, isImportable, readScriptFile } from '../../core/importScript'
 import { Section, Segmented, Slider, Toggle, Kbd } from './controls'
 import { ModeIcon } from '../icons'
+import { MODE_COPY, MODE_ORDER, micLabel, spacingLabel, widthLabel } from '../../core/modes'
+import { dismissGuide, guideDone } from '../../core/guide'
 
 function ago(t: number): string {
   const s = (Date.now() - t) / 1000
@@ -118,6 +120,24 @@ function Page({ script }: { script: Script }) {
 
   return (
     <div class="page">
+      {!guideDone.value && (
+        <aside class="guide" aria-label="How to start">
+          <ol>
+            <li>
+              <strong>Add your script.</strong> Type or paste it below, or drop in a text file.
+            </li>
+            <li>
+              <strong>Choose how it scrolls</strong> in the settings. Auto scroll needs no microphone.
+            </li>
+            <li>
+              <strong>Press Start</strong> and read. Press Esc to come back here.
+            </li>
+          </ol>
+          <button class="guide-close" onClick={dismissGuide}>
+            Got it
+          </button>
+        </aside>
+      )}
       <input
         class="page-title"
         value={script.title}
@@ -150,20 +170,20 @@ function Page({ script }: { script: Script }) {
         class="page-text"
         value={script.text}
         spellcheck
-        placeholder={'Paste or write your script.\n\n# A heading starts a section\n[smile] Brackets are cues: shown, never read.\nA blank line starts a new paragraph.'}
+        placeholder={'Type or paste your script here.\n\nLeave a blank line between paragraphs.\n# A line starting with # becomes a section heading.\n[Square brackets] are notes to yourself. They show on screen but you don\'t read them.'}
         aria-label="Script"
         onInput={(e) => updateScript(script.id, { text: (e.target as HTMLTextAreaElement).value })}
       />
       <p class="page-hint">
         <span>
-          <Kbd>#</Kbd> section
+          <Kbd>#</Kbd> heading
         </span>
         <span>
-          <Kbd>[cue]</Kbd> stage note
+          <Kbd>[ ]</Kbd> note to yourself
         </span>
         <span>
           <Kbd>⌘</Kbd>
-          <Kbd>↵</Kbd> go
+          <Kbd>↵</Kbd> start
         </span>
       </p>
     </div>
@@ -175,35 +195,32 @@ function Setup() {
   return (
     <aside class={`setup ${deskSheet.value === 'setup' ? 'is-open' : ''}`}>
       <SheetHead title="Settings" />
-      <Section label="Motion">
+      <Section label="Scrolling">
         <Segmented
           label="Scroll mode"
           value={s.mode}
           onChange={(mode) => patchSettings({ mode })}
           options={[
-            { value: 'manual', label: 'Steady', icon: <ModeIcon mode="manual" />, title: 'Scrolls at a steady speed' },
-            { value: 'voice', label: 'Voice', icon: <ModeIcon mode="voice" />, title: 'Follows your words' },
-            { value: 'breath', label: 'Breath', icon: <ModeIcon mode="breath" />, title: 'Moves while you speak, rests when you pause' },
+            ...MODE_ORDER.map((m) => ({ value: m, label: MODE_COPY[m].label, icon: <ModeIcon mode={m} />, title: MODE_COPY[m].summary })),
           ]}
         />
         <p class="setup-note">
-          {s.mode === 'manual' && 'A steady glide at the pace you set.'}
-          {s.mode === 'voice' && 'Listens and follows your place in the script. Skip, stumble or ad-lib, and it keeps up.'}
-          {s.mode === 'breath' && 'No speech recognition. Scrolls while you talk and settles when you stop.'}
+          {MODE_COPY[s.mode].summary}
+          {MODE_COPY[s.mode].needsMic && ' Your browser will ask to use the microphone. Audio stays on this device.'}
         </p>
         {s.mode !== 'voice' && (
-          <Slider label="Pace" value={s.speed} min={1} max={10} step={0.5} format={(v) => `${speedToWpm(v)} wpm`} onInput={(speed) => patchSettings({ speed })} />
+          <Slider label="Speed" value={s.speed} min={1} max={10} step={0.5} format={(v) => `${speedToWpm(v)} wpm`} onInput={(speed) => patchSettings({ speed })} />
         )}
       </Section>
 
       {s.mode !== 'manual' && (
-        <Section label="Listening">
+        <Section label="Microphone">
           <Slider
-            label="Mic sensitivity"
+            label="Sensitivity"
             value={Math.round(s.sensitivity * 100)}
             min={0}
             max={100}
-            format={(v) => (v < 34 ? 'Close mic' : v < 67 ? 'Normal' : 'Soft voice')}
+            format={micLabel}
             onInput={(v) => patchSettings({ sensitivity: v / 100 })}
           />
           {s.mode === 'voice' && (
@@ -217,23 +234,23 @@ function Setup() {
         </Section>
       )}
 
-      <Section label="Type">
-        <Slider label="Size" value={s.fontSize} min={28} max={120} format={(v) => `${v}px`} onInput={(fontSize) => patchSettings({ fontSize })} />
-        <Slider label="Measure" value={s.measure} min={14} max={48} format={(v) => `${v} ch`} onInput={(measure) => patchSettings({ measure })} />
-        <Slider label="Leading" value={s.lineHeight} min={1.05} max={1.9} step={0.01} format={(v) => v.toFixed(2)} onInput={(lineHeight) => patchSettings({ lineHeight })} />
+      <Section label="Text">
+        <Slider label="Text size" value={s.fontSize} min={28} max={120} format={(v) => `${v}px`} onInput={(fontSize) => patchSettings({ fontSize })} />
+        <Slider label="Line width" value={s.measure} min={14} max={48} format={widthLabel} onInput={(measure) => patchSettings({ measure })} />
+        <Slider label="Line spacing" value={s.lineHeight} min={1.05} max={1.9} step={0.01} format={spacingLabel} onInput={(lineHeight) => patchSettings({ lineHeight })} />
       </Section>
 
-      <Section label="Glass">
-        <Slider label="Reading line" value={Math.round(s.eyeline * 100)} min={12} max={70} format={(v) => `${v}% down`} onInput={(v) => patchSettings({ eyeline: v / 100 })} />
-        <Toggle label="Mirror horizontally" hint="For beam-splitter glass" checked={s.mirrorX} onChange={(mirrorX) => patchSettings({ mirrorX })} />
-        <Toggle label="Mirror vertically" checked={s.mirrorY} onChange={(mirrorY) => patchSettings({ mirrorY })} />
+      <Section label="Reading screen">
+        <Slider label="Where your eyes rest" value={Math.round(s.eyeline * 100)} min={12} max={70} format={(v) => (v < 30 ? 'Near the top' : v < 50 ? 'Upper middle' : 'Middle')} onInput={(v) => patchSettings({ eyeline: v / 100 })} />
+        <Toggle label="Flip text" hint="For teleprompter glass that mirrors the screen" checked={s.mirrorX} onChange={(mirrorX) => patchSettings({ mirrorX })} />
+        <Toggle label="Flip text vertically" hint="Reflects text from top to bottom" checked={s.mirrorY} onChange={(mirrorY) => patchSettings({ mirrorY })} />
       </Section>
 
-      <Section label="Extras">
-        <Toggle label="Countdown" hint="3, 2, 1 before you start" checked={s.countdown} onChange={(countdown) => patchSettings({ countdown })} />
-        <Toggle label="Camera check" hint="See yourself under the lens" checked={s.camera} onChange={(camera) => patchSettings({ camera })} />
-        <Toggle label="The lamp" hint="It nods along. It means well." checked={s.lamp} onChange={(lamp) => patchSettings({ lamp })} />
-        <Toggle label="Dark desk" hint="The stage is always dark" checked={s.theme === 'night'} onChange={(v) => patchSettings({ theme: v ? 'night' : 'paper' })} />
+      <Section label="Options">
+        <Toggle label="Countdown before starting" hint="3, 2, 1" checked={s.countdown} onChange={(countdown) => patchSettings({ countdown })} />
+        <Toggle label="Camera preview" hint="See yourself at the top while you read" checked={s.camera} onChange={(camera) => patchSettings({ camera })} />
+        <Toggle label="Show the lamp" hint="Lights up the line you're on" checked={s.lamp} onChange={(lamp) => patchSettings({ lamp })} />
+        <Toggle label="Dark editor" hint="The reading screen is always dark" checked={s.theme === 'night'} onChange={(v) => patchSettings({ theme: v ? 'night' : 'paper' })} />
       </Section>
     </aside>
   )

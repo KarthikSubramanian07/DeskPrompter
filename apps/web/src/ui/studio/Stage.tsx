@@ -15,6 +15,7 @@ import { createLampHandle, Lamp } from '../lamp/Lamp'
 import { CameraCheck } from './CameraCheck'
 import { Kbd } from './controls'
 import { ModeIcon } from '../icons'
+import { MODE_COPY } from '../../core/modes'
 
 export interface StageApi {
   prompter: Prompter
@@ -55,17 +56,17 @@ const KEYS: [string, string][] = [
   ['← →', 'Back or forward a line'],
   ['PgUp PgDn', 'Back or forward a paragraph'],
   ['Home', 'Back to the top'],
-  ['1 2 3', 'Steady, voice or breath'],
+  ['1 2 3', 'Auto scroll, Voice follow or Talk to scroll'],
   ['m', 'Mirror for glass'],
   ['f', 'Fullscreen'],
   ['+ −', 'Bigger or smaller type'],
-  ['esc', 'Back to the desk'],
+  ['esc', 'Back to editing'],
 ]
 
 const MODES: { value: PrompterMode; label: string }[] = [
-  { value: 'manual', label: 'Steady' },
-  { value: 'voice', label: 'Voice' },
-  { value: 'breath', label: 'Breath' },
+  { value: 'manual', label: MODE_COPY.manual.label },
+  { value: 'voice', label: MODE_COPY.voice.label },
+  { value: 'breath', label: MODE_COPY.breath.label },
 ]
 
 export function Stage({ script, parsed, onExit, onReady, level, status, display, bridge, mirror }: StageProps) {
@@ -83,6 +84,7 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
   const s = settings.value
   // On phone-width screens the reading column needs every pixel; the lamp sits out.
   const narrow = useNarrow(600)
+  const touch = useRef(typeof matchMedia === 'function' && matchMedia('(hover: none)').matches).current
   // The lamp hangs in the side margin; when the column leaves no room, it sits out.
   const lampFits = useSignal(true)
   const listener = useRef<Listener | null>(null)
@@ -588,7 +590,7 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
               <path d="M6 4 2 12h4zM10 4l4 8h-4z" fill="none" stroke="currentColor" stroke-linejoin="round" />
             </svg>
           </button>
-          <button class="hud-icon" onClick={onExit} title="Back to the desk (Esc)" aria-label="Exit">
+          <button class="hud-icon" onClick={onExit} title="Back to editing (Esc)" aria-label="Back to editing">
             <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
               <path d="m4 4 8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
@@ -598,8 +600,13 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
       {!display && status && <div class="stage-status">{status}</div>}
       {!display && !playing.value && countdown.value === null && (
         <p class="stage-hint">
-          <Kbd>space</Kbd> go · <Kbd>←</Kbd>
-          <Kbd>→</Kbd> lines · <Kbd>?</Kbd> all keys · <Kbd>esc</Kbd> desk
+          {touch ? (
+            <>Tap ▶ to start. Drag the text to move it.</>
+          ) : (
+            <>
+              Press <Kbd>space</Kbd> or ▶ to start · <Kbd>?</Kbd> for all shortcuts · <Kbd>esc</Kbd> to go back
+            </>
+          )}
         </p>
       )}
       {!display && help.value && (
@@ -618,7 +625,7 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
                 </div>
               ))}
             </dl>
-            <p class="keys-foot">Presentation clickers work too: they send Page Up and Page Down.</p>
+            <p class="keys-foot">Presentation clickers work too. Their buttons move a paragraph at a time.</p>
           </div>
         </div>
       )}

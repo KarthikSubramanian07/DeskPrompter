@@ -102,14 +102,14 @@ export class Listener {
     this.mode = mode
     if (mode === 'manual') return
     this.state.value = 'starting'
-    this.status.value = 'Asking for the microphone…'
+    this.status.value = 'Allow the microphone so it can hear you. Audio stays on this device.'
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 },
       })
     } catch {
       if (run !== this.run) return
-      this.fail('Microphone blocked. Allow it in the address bar, or use Steady mode.')
+      this.fail('Microphone blocked. Allow it in the address bar, or use Auto scroll.')
       return
     }
     if (run !== this.run) return this.releaseStream()
@@ -121,14 +121,14 @@ export class Listener {
 
     if (mode === 'breath') {
       this.state.value = 'listening'
-      this.status.value = 'Breath mode: scrolls while you speak'
+      this.status.value = 'Listening. The text moves while you talk.'
       return
     }
 
     // Voice mode.
     const mod = alignerModule.value ?? (await loadAlignerOnce())
     if (run !== this.run) return
-    if (!mod) return this.fail('Voice-follow couldn’t load here. Try Breath mode.')
+    if (!mod) return this.fail('Voice follow couldn’t load. Try Talk to scroll.')
     this.aligner = mod.createAligner(this.text)
     const startAt = Math.max(-1, this.prompter.wordAtLine() - 1)
     if (startAt >= 0) this.aligner.setCursor(startAt)
@@ -139,7 +139,7 @@ export class Listener {
     // Chrome's engine went quiet here before: go straight to the built-in model.
     if (this.auto && id === 'chrome-local' && chromeLocalKnownSilent()) id = 'moonshine'
     if (run !== this.run) return
-    if (!id) return this.fail('No on-device speech engine here. Breath mode works everywhere.')
+    if (!id) return this.fail('Speech recognition is unavailable. Try Talk to scroll.')
 
     // Hand-scrolls and taps resync the tracker.
     const prev = this.prompter.events.manualSeek

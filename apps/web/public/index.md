@@ -4,17 +4,23 @@ DeskPrompter is a free, open-source teleprompter that runs in your browser. It s
 
 Open the studio: https://deskprompter.pages.dev/studio
 
+## How it works
+
+1. **Add your script.** Type it, paste it, or drop in a text file.
+2. **Choose how it scrolls.**
+3. **Press Start and read.** Look at the camera and talk normally.
+
 ## Three ways to scroll
 
-- **Voice**: follows your words. Speech recognition runs on your device, using Chrome's on-device recognizer or the open-source Moonshine model in WebAssembly. A Rust engine matches what you say to the script, word by word.
-- **Breath**: no transcription at all. A tiny voice detector scrolls while you talk and glides to a stop when you pause.
-- **Steady**: a smooth glide at a pace you set in words per minute.
+- **Voice follow**: listens as you read and keeps your place. Skip, stumble or ad-lib and it keeps up. Speech recognition runs on your device.
+- **Talk to scroll**: scrolls while you are talking and pauses when you stop. It does not need to understand your words, so it works in any language.
+- **Auto scroll**: classic scrolling at a steady speed you choose.
 
-## Built for real recording setups
+## Also included
 
-- **Phone remote**: scan a QR code and your phone becomes the clicker, connected directly to your laptop.
-- **Ready for the glass**: mirror the text for beam-splitter rigs, put the reading line under the lens, and open a talent window on a second screen.
-- **Captions**: every word you read in voice mode is timed; download SRT or VTT for your editor.
+- **Phone remote**: scan a code and control the teleprompter from your phone.
+- **Works with teleprompter glass**: flip the text for a mirror rig, or send it to a second screen.
+- **Captions**: after reading in Voice follow mode, download subtitles (SRT or VTT) for your video editor.
 - **Phones and tablets**: touch scrolling, a screen that stays awake on stage, and full settings on small screens.
 
 ## Private by design

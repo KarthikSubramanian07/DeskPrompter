@@ -13,6 +13,7 @@ import { Kbd } from '../ui/studio/controls'
 import { PairButton, TalentButton } from '../ui/studio/Pair'
 import { HostBridge } from '../core/bridge'
 import { mountPoint } from '../mount'
+import { dismissGuide } from '../core/guide'
 import { readLinkedScript } from '../core/deeplink'
 import { Display } from '../ui/studio/Display'
 
@@ -48,6 +49,7 @@ function Studio() {
     const onKey = (e: KeyboardEvent) => {
       if (view.value === 'desk' && (e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault()
+        dismissGuide()
         view.value = 'stage'
       }
     }
@@ -76,10 +78,16 @@ function Studio() {
               {bridge && <TalentButton />}
               {bridge && <PairButton bridge={bridge} />}
               <span class="bar-privacy" title="Scripts are stored in this browser. Nothing is uploaded.">
-                <span class="dot-sage" /> Private, works offline
+                <span class="dot-sage" /> Saved on this device
               </span>
-              <button class="btn-go" onClick={() => (view.value = 'stage')}>
-                <span>Go</span>
+              <button
+                class="btn-go"
+                onClick={() => {
+                  dismissGuide()
+                  view.value = 'stage'
+                }}
+              >
+                <span>Start</span>
                 <span class="btn-go-kbd">
                   <Kbd>⌘</Kbd>
                   <Kbd>↵</Kbd>

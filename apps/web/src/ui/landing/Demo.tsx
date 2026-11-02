@@ -25,9 +25,9 @@ function timeline(): Beat[] {
     WORDS[s]!.forEach((w, k) => beats.push({ wi: START[s]! + k, ms: 220 + w.length * 34, note: k === 0 ? firstNote : undefined }))
   read(0)
   beats.push({ pause: 500 })
-  read(2, 'skipped a line, and it caught up')
+  read(2, 'You skipped a line, and it followed.')
   read(3)
-  beats.push({ pause: 2600, note: 'paused, so it waits' })
+  beats.push({ pause: 2600, note: 'You paused, so it waits.' })
   beats.push({ reset: true })
   return beats
 }
@@ -140,8 +140,8 @@ export function Demo() {
           <span class="demo-status-text">{speaking ? 'Listening on this device' : wi < 0 ? 'Ready' : 'Waiting for you'}</span>
         </div>
       </div>
-      <p class={`demo-note hand ${note ? 'show' : ''}`} aria-live="polite">
-        {note ?? ' '}
+      <p class={`demo-note ${note ? 'show' : ''}`} aria-live="polite">
+        {note ?? 'A short demo: the highlight follows a pretend speaker.'}
       </p>
       <span class="sr-only">A demo: words light up as a speaker reads, skip a sentence, and pause.</span>
     </div>

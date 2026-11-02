@@ -11,11 +11,11 @@ The studio is where you write a script and read it. It is a web app: open https:
 
 ## Read it
 
-Press **Go** to open the stage, then press play.
+Press **Start** to open the reading screen, then press play (or Space).
 
-- **Voice mode** follows your place as you speak. It uses an on-device recognizer, downloading the Moonshine model (about 51 MB) the first time if needed.
-- **Breath mode** scrolls while you talk and stops when you pause.
-- **Steady mode** scrolls at a set number of words per minute.
+- **Voice follow** keeps your place as you speak. It uses an on-device recognizer, downloading the Moonshine model (about 51 MB) the first time if needed.
+- **Talk to scroll** moves while you talk and pauses when you stop.
+- **Auto scroll** moves at a steady speed you choose.
 
 ## Keyboard shortcuts on stage
 
@@ -26,12 +26,12 @@ Press **Go** to open the stage, then press play.
 | Left / Right | Back or forward a line |
 | Page Up / Page Down | Back or forward a paragraph (presentation clickers) |
 | Home | Back to the top |
-| 1, 2, 3 | Steady, voice or breath mode |
-| M | Mirror for glass |
+| 1, 2, 3 | Auto scroll, Voice follow or Talk to scroll |
+| M | Flip text for teleprompter glass |
 | F | Fullscreen |
 | + / - | Bigger or smaller type |
 | ? | Show all shortcuts |
-| Esc | Back to the desk |
+| Esc | Back to editing |
 
 ## Open a script from a link
 
@@ -41,6 +41,6 @@ Agents and other tools can open a script directly. The script travels in the URL
 
 ## More
 
-- Phone remote: choose **Pair a phone** and scan the QR code.
-- Talent window: choose **Talent window** for a mirrored second screen.
-- Captions: after a voice-mode read, pause and download SRT or VTT.
+- Phone remote: choose **Phone remote** and scan the code with your phone's camera.
+- Second screen: choose **Second screen** to open the script in a window you can move to another display.
+- Captions: after reading in Voice follow mode, pause and download SRT or VTT.

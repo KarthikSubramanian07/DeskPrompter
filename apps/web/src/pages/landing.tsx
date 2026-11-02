@@ -89,13 +89,6 @@ function Hero() {
     <section class="hero night" ref={stage}>
       <div class="hero-grid" aria-hidden="true" />
       <div class="hero-copy">
-        <p class="hero-note hand" aria-hidden="true">
-          go on, read it out loud
-          <svg viewBox="0 0 120 70" width="96" height="56" class="hero-arrow">
-            <path d="M6 8 C 30 4, 62 10, 78 30 S 92 58, 104 62" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
-            <path d="M92 60 L105 63 L99 51" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </p>
         <h1 class="hero-title">
           <span class="dim" aria-hidden="true">
             Say it like
@@ -109,58 +102,67 @@ function Hero() {
           </span>
         </h1>
         <p class="hero-sub">
-          DeskPrompter is a free teleprompter that scrolls when you speak and waits when you pause. It runs in your browser, works offline, and never
-          sends your words anywhere.
+          DeskPrompter is a free teleprompter for your browser. It follows your voice as you read, so your eyes stay on the camera instead of the
+          keyboard.
         </p>
         <div class="hero-cta">
           <a class="btn btn-clay" href="/studio">
-            Open the studio
+            Open the teleprompter
             <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
               <path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </a>
-          <a class="btn btn-ghost" href="https://github.com/KarthikSubramanian07/DeskPrompter">
-            Read the source
+          <a class="btn btn-ghost" href="#how">
+            See how it works
           </a>
         </div>
-        <p class="hero-fine">Free. Works offline. Nothing you say leaves your device.</p>
+        <p class="hero-fine">Free. No sign-up. Your script stays on your device.</p>
       </div>
       <Lamp handle={handle} />
     </section>
   )
 }
 
+const STEPS = [
+  { title: 'Add your script', body: 'Type it, paste it, or drop in a text file. Your scripts are saved in this browser.' },
+  { title: 'Choose how it scrolls', body: 'Let it follow your voice, move only while you talk, or scroll at a steady speed.' },
+  { title: 'Press Start and read', body: 'Look at the camera and talk normally. If you skip or repeat a line, it keeps up.' },
+]
+
 const MODES = [
   {
     mode: 'voice' as const,
-    title: 'Voice',
-    body: 'Follows your words. Skip a line, ad-lib, go back for another take: it finds your place again. Recognition runs on your device.',
+    title: 'Follows your voice',
+    body: 'It listens as you read and keeps your current line in view. Skip ahead or go back and it finds your place.',
   },
   {
     mode: 'breath' as const,
-    title: 'Breath',
-    body: 'No transcription at all. A tiny voice detector scrolls while you talk and glides to a stop when you pause.',
+    title: 'Moves while you talk',
+    body: 'Scrolls when you speak and stops when you pause. It does not need to understand your words, so it works in any language.',
   },
   {
     mode: 'manual' as const,
-    title: 'Steady',
-    body: 'The classic glide, set in words per minute. Changes ease in, never jump. Space to pause, arrows to adjust.',
+    title: 'Steady speed',
+    body: 'Classic auto-scroll at a speed you choose. Speed it up or slow it down any time.',
   },
 ]
 
 const EXTRAS = [
-  { title: 'Your phone is the clicker', body: 'Scan a code and your phone becomes the remote, with the current line and time left. It talks to your laptop directly.' },
-  { title: 'Ready for the glass', body: 'Mirror for beam-splitter rigs, put the reading line right under the lens, and send a talent window to a second screen.' },
-  { title: 'Captions on the way out', body: 'Every word you read in voice mode is timed. Download SRT or VTT and drop it on your edit timeline.' },
-  { title: 'Works offline', body: 'Install it like an app. Scripts live in your browser, and nothing is uploaded, ever.' },
+  { title: 'Use your phone as a remote', body: 'Scan a code and control the teleprompter from your phone.' },
+  { title: 'Works with teleprompter glass', body: 'Flip the text for a mirror rig, or send it to a second screen.' },
+  { title: 'Captions from your read', body: 'After reading in voice mode, download subtitles for your video editor.' },
+  { title: 'Phones, tablets, offline', body: 'Use it on any device. Install it like an app and it works without internet.' },
 ]
 
-const PIPE = [
-  { k: 'Microphone', v: 'stays in the tab' },
-  { k: 'Voice gate', v: 'Zig → wasm · 3 KB' },
-  { k: 'Speech engine', v: 'on-device' },
-  { k: 'Aligner', v: 'Rust → wasm · 113 KB' },
-  { k: 'Stage', v: 'springs at 60 fps' },
+const FAQ = [
+  { q: 'Is it really free?', a: 'Yes. There is no paid plan, no trial and no ads. The code is open source.' },
+  { q: 'Do I need an account?', a: 'No. Open the teleprompter and start. Your scripts are saved in your browser.' },
+  { q: 'Is my script or my voice uploaded?', a: 'No. Your script stays in your browser and your voice is processed on your device. The privacy page lists every connection the app makes.' },
+  {
+    q: 'Which browsers work?',
+    a: 'Chrome, Edge, Safari and Firefox, on computers, phones and tablets. Voice follow works best in Chrome. The first time you use it elsewhere, it downloads a speech model of about 50 MB.',
+  },
+  { q: 'Can I use it with a real teleprompter rig?', a: 'Yes. Turn on Flip text in the settings for beam-splitter glass, or open a second screen for the person reading.' },
 ]
 
 function Landing() {
@@ -180,10 +182,10 @@ function Landing() {
           <span>DeskPrompter</span>
         </a>
         <nav>
-          <a href="#follow">How it works</a>
-          <a href="https://github.com/KarthikSubramanian07/DeskPrompter">GitHub</a>
+          <a href="#how">How it works</a>
+          <a href="#faq">FAQ</a>
           <a class="nav-cta" href="/studio">
-            Open the studio
+            Open the teleprompter
           </a>
         </nav>
       </header>
@@ -192,23 +194,26 @@ function Landing() {
           <Hero />
         </div>
         <div class="day">
-          <section class="sec follow" id="follow">
+          <section class="sec how" id="how">
             <div class="sec-head">
-              <p class="eyebrow">Watch it follow</p>
-              <h2>
-                It reads <em>along</em> with you.
-              </h2>
-              <p class="sec-sub">
-                The words you&rsquo;ve said fall back, the next ones step forward, and the lamp keeps the line you&rsquo;re on in the light. Skip a sentence and it skips with you. Stop talking and it waits.
-              </p>
+              <h2>How it works</h2>
             </div>
+            <ol class="steps">
+              {STEPS.map((st, i) => (
+                <li class="step" key={st.title}>
+                  <span class="step-n">{i + 1}</span>
+                  <h3>{st.title}</h3>
+                  <p>{st.body}</p>
+                </li>
+              ))}
+            </ol>
             <Demo />
           </section>
 
           <section class="sec modes">
             <div class="sec-head">
-              <p class="eyebrow">Three ways to scroll</p>
-              <h2>Pick how it keeps time.</h2>
+              <h2>Three ways to scroll</h2>
+              <p class="sec-sub">You can switch any time, even in the middle of reading.</p>
             </div>
             <div class="mode-grid">
               {MODES.map((m) => (
@@ -224,6 +229,9 @@ function Landing() {
           </section>
 
           <section class="sec extras">
+            <div class="sec-head">
+              <h2>Also included</h2>
+            </div>
             <div class="extra-grid">
               {EXTRAS.map((x) => (
                 <div class="extra" key={x.title}>
@@ -234,59 +242,29 @@ function Landing() {
             </div>
           </section>
 
-          <section class="sec under">
+          <section class="sec faq" id="faq">
             <div class="sec-head">
-              <p class="eyebrow">Under the desk</p>
-              <h2>Built to be fast, small, and private.</h2>
-              <p class="sec-sub">
-                Your voice goes through a pipeline that runs entirely in the tab. The heavy parts are compiled to WebAssembly: Rust for the matching, Zig for the audio thread.
-              </p>
+              <h2>Questions</h2>
             </div>
-            <ol class="pipe">
-              {PIPE.map((p, i) => (
-                <li key={p.k}>
-                  <span class="pipe-k">{p.k}</span>
-                  <span class="pipe-v">{p.v}</span>
-                  {i < PIPE.length - 1 && <span class="pipe-arrow" aria-hidden="true" />}
-                </li>
+            <div class="faq-list">
+              {FAQ.map((f) => (
+                <details class="faq-item" key={f.q}>
+                  <summary>{f.q}</summary>
+                  <p>{f.a}</p>
+                </details>
               ))}
-            </ol>
-            <p class="pipe-note hand">nothing on this line touches a server</p>
+            </div>
           </section>
 
-          <section class="sec fine">
-            <div class="fine-card">
-              <p class="hand fine-title">the fine print</p>
-              <dl>
-                <div>
-                  <dt>Price</dt>
-                  <dd>Free, forever</dd>
-                </div>
-                <div>
-                  <dt>Accounts</dt>
-                  <dd>None</dd>
-                </div>
-                <div>
-                  <dt>Uploads</dt>
-                  <dd>None. Scripts live in your browser</dd>
-                </div>
-                <div>
-                  <dt>Source</dt>
-                  <dd>
-                    <a href="https://github.com/KarthikSubramanian07/DeskPrompter">Open, MIT</a>
-                  </dd>
-                </div>
-              </dl>
-            </div>
-            <div class="fine-cta">
-              <h2>Ready when you are.</h2>
-              <a class="btn btn-clay" href="/studio">
-                Open the studio
-                <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
-                  <path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              </a>
-            </div>
+          <section class="sec end">
+            <h2>Ready to read?</h2>
+            <p class="sec-sub">It takes a few seconds to start. No sign-up.</p>
+            <a class="btn btn-clay" href="/studio">
+              Open the teleprompter
+              <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+                <path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
           </section>
 
           <footer class="foot">
@@ -297,9 +275,9 @@ function Landing() {
               <a href="/about">About</a>
               <a href="/contact">Contact</a>
               <a href="/privacy">Privacy</a>
-              <a href="/llms.txt">llms.txt</a>
+              <a href="https://github.com/KarthikSubramanian07/DeskPrompter">Source code</a>
             </nav>
-            <span class="foot-note">Made late at night. Open source under MIT.</span>
+            <span class="foot-note">Free and open source.</span>
           </footer>
         </div>
       </main>
