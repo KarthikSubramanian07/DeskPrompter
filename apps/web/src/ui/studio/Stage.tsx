@@ -37,6 +37,19 @@ export interface StageProps {
   mirror?: { x: boolean; y: boolean }
 }
 
+const KEYS: [string, string][] = [
+  ['space', 'Play or pause'],
+  ['↑ ↓', 'Faster or slower (lines in voice mode)'],
+  ['← →', 'Back or forward a line'],
+  ['PgUp PgDn', 'Back or forward a paragraph'],
+  ['Home', 'Back to the top'],
+  ['1 2 3', 'Steady, voice or breath'],
+  ['m', 'Mirror for glass'],
+  ['f', 'Fullscreen'],
+  ['+ −', 'Bigger or smaller type'],
+  ['esc', 'Back to the desk'],
+]
+
 const MODES: { value: PrompterMode; label: string }[] = [
   { value: 'manual', label: 'Steady' },
   { value: 'voice', label: 'Voice' },
@@ -53,6 +66,7 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
   const progress = useSignal(0)
   const elapsed = useSignal(0)
   const countdown = useSignal<number | null>(null)
+  const help = useSignal(false)
   const wordAt = useSignal(0)
   const s = settings.value
   const listener = useRef<Listener | null>(null)
@@ -295,8 +309,13 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
           start()
           break
         case 'Escape':
-          if (countdown.value !== null) countdown.value = null
+          if (help.value) help.value = false
+          else if (countdown.value !== null) countdown.value = null
           else onExit()
+          break
+        case '?':
+        case '/':
+          help.value = !help.value
           break
         case 'ArrowUp':
           e.preventDefault()
@@ -494,8 +513,28 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
       {!display && !playing.value && countdown.value === null && (
         <p class="stage-hint">
           <Kbd>space</Kbd> go · <Kbd>←</Kbd>
-          <Kbd>→</Kbd> lines · <Kbd>esc</Kbd> desk
+          <Kbd>→</Kbd> lines · <Kbd>?</Kbd> all keys · <Kbd>esc</Kbd> desk
         </p>
+      )}
+      {!display && help.value && (
+        <div class="keys" role="dialog" aria-label="Keyboard shortcuts" onClick={() => (help.value = false)}>
+          <div class="keys-card" onClick={(e) => e.stopPropagation()}>
+            <p class="keys-title">Keys on stage</p>
+            <dl>
+              {KEYS.map(([k, v]) => (
+                <div key={v}>
+                  <dt>
+                    {k.split(' ').map((x) => (
+                      <Kbd>{x}</Kbd>
+                    ))}
+                  </dt>
+                  <dd>{v}</dd>
+                </div>
+              ))}
+            </dl>
+            <p class="keys-foot">Presentation clickers work too: they send Page Up and Page Down.</p>
+          </div>
+        </div>
       )}
     </div>
   )
