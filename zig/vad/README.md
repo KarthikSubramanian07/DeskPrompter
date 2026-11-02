@@ -12,44 +12,24 @@ happens here, and no audio leaves the audio thread.
 
 ## Signal chain
 
-```
- mic @ 44.1/48 kHz, 128-sample render quanta
-        │
-        ▼
- ┌──────────────┐   box average of D samples, D = round(fs / 16 kHz)
- │ decimate ÷D  │   48k → 16k · 44.1k → 14.7k · 16k → 16k
- └──────┬───────┘
-        ▼
- ┌──────────────┐   2nd-order Butterworth: kills rumble, desk thumps, DC
- │ HPF 100 Hz   │
- └──┬───────┬───┘
-    │       ├──────────────▶ zero crossings ──▶ ZCR (hiss and fricatives run high)
-    │       ▼
-    │  ┌──────────────────┐
-    │  │ HPF 300 → LPF 3k │  the speech band, where vowels live
-    │  └────────┬─────────┘
-    ▼           ▼
-   Σx²         Σx²        ◀── accumulated over 20 ms frames
-    │           │
-    ▼           ▼
- total dB    band dB ─┬─▶ noise floor: rising-minimum tracker
-                      │     falls fast (50 ms), rises slowly (4 s),
-                      │     rises fast (0.3 s) when the signal is steady or unvoiced;
-                      │     never below −70 dBFS
-                      ├─▶ spectral flux: mean |Δ band dB| between frames
-                      │     < 1.25 dB/frame means steady (fans, hum, AC)
-                      ▼
-               SNR = band dB − max(floor, −70 dBFS)
-                      │
-   candidate = SNR ≥ threshold  ∧  ZCR ≤ 0.30  ∧  (speaking ∨ ¬steady)
-                      │
-                      ▼
- ┌──────────────────────────────────────────────────────────┐
- │ hysteresis: 3 frames (60 ms) to open; every candidate     │
- │ re-arms an 18-frame (360 ms) hangover; −4 dB Schmitt      │
- │ margin while open                                         │──▶ speaking
- └──────────────────────────────────────────────────────────┘
- level = smooth( clamp((SNR − 3) / 36, 0, 1) )   20 ms up, 180 ms down ──▶ level
+```mermaid
+flowchart TB
+  mic["Microphone · 44.1 / 48 kHz<br/>128-sample render quanta"] --> decimate["Decimate · box average<br/>About 16 kHz"]
+  decimate --> highpass["100 Hz high-pass filter<br/>Remove rumble and DC"]
+  highpass --> zcr["Zero-crossing rate"]
+  highpass --> total["Total energy<br/>20 ms frames"]
+  highpass --> band["Speech band<br/>300 Hz high-pass → 3 kHz low-pass"]
+  band --> energy["Band energy · dB<br/>20 ms frames"]
+  energy --> floor["Adaptive noise floor<br/>Falls fast, rises slowly<br/>Faster for steady noise"]
+  energy --> flux["Spectral flux<br/>Detect steady noise"]
+  energy --> snr["Signal-to-noise ratio"]
+  floor --> snr
+  snr --> candidate{"Speech candidate?<br/>SNR above threshold<br/>ZCR at most 0.30<br/>Speaking already or signal not steady"}
+  zcr --> candidate
+  flux --> candidate
+  candidate --> gate["Hysteresis<br/>60 ms to open · 360 ms hangover<br/>4 dB margin while open"]
+  gate --> speaking["Speaking state"]
+  snr --> smooth["Normalize and smooth<br/>20 ms rise · 180 ms fall"] --> level["Level · 0 to 1"]
 ```
 
 ### Why each piece is there

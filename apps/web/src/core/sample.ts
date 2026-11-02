@@ -1,17 +1,15 @@
-export const SAMPLE_TITLE = 'Hello, lamp'
+export const SAMPLE_TITLE = 'Try me: sample script'
 
-export const SAMPLE_SCRIPT = `# Opening
+export const SAMPLE_SCRIPT = `# Welcome
 
-Good evening, and thanks for sticking around. [smile] The office is quiet, the coffee went cold an hour ago, and there's only one thing left on the list tonight: what you came here to say.
+Hi! This is a sample script, so you can try DeskPrompter before writing your own. [smile]
 
-This is DeskPrompter. It's a teleprompter that listens. When you speak, the words move with you. When you pause, it waits. When you skip a line, it finds you again.
+Press the play button or Space, then read these lines out loud at your normal pace. Keep your eyes near the top of the screen, where the lines light up.
 
-# The trick
+# Try skipping a line
 
-Nothing you say leaves this machine. [beat] There's no account, no upload, and no server reading over your shoulder. The listening happens right here, on your own device.
+In Voice follow mode, skip the next sentence and keep reading. This is the sentence to skip. Notice how it finds your place again.
 
-Try it now. Read a sentence out loud, then skip one, then go back. Keep an eye on the lamp. It's paying attention.
+# Make it yours
 
-# Close
-
-When you're ready, press go, look into the lens, and say it like you mean it. [pause] Thanks for listening.`
+When you're done, delete this text and paste your own script. Leave a blank line between paragraphs. Start a line with a number sign to make a heading, and put notes to yourself in square brackets. [pause] That's all there is to it.`

@@ -2,33 +2,25 @@
 
 The voice-follow core of DeskPrompter. It turns a script into display tokens
 and keeps track of where you are in it while you speak. Pure Rust, compiled to
-WebAssembly. No network, no models, no allocation storms: one feed on a
-10,000-word script takes microseconds.
+WebAssembly. It matches recognizer output against the script without a network connection or a language model.
 
-```
-recognizer ──► "…the second idea is about lis"  (interim, whole utterance)
-                          │
-              normalize ──┤  NFKC · lowercase · strip punctuation · 2026 → twenty twenty six
-                          │  CJK → one unit per character · um/uh dropped
-                          ▼
-   heard tail (last 8 units)   [ idea  is  about  lis ]  ◄─ newest unit must end the path
-                          │
-   search ranges          │   cursor-40 ──────── cursor ─────────────── cursor+300
-                          │   + seeds: positions of the rarest recent word anywhere (inverted index)
-                          ▼
-   local alignment        script:  … the  second  idea  is  about  listening  we …
-   (Smith–Waterman              heard:   ·     ·      idea  is  about  lis
-    over words)                              exact    exact    stop  prefix(0.6)
-                          │
-                          ▼
-   classify best path ──► follow (starts ≤ 3 words ahead)        → move on modest evidence
-                          near jump (≤ 30 words)                 → 2 strong words at a sentence start, or 3
-                          far jump                               → 3 strong words + margin, confirmed twice
-                          backtrack (behind cursor)              → jump evidence, confirmed twice, finals only
-                          nothing convincing                     → hold (many misses → lost, search widens)
-                          │
-                          ▼
-   AlignResult { cursor (committed by finals), lead (speculative, interims), confidence, state, changed }
+```mermaid
+flowchart TB
+  recognizer["Recognizer hypothesis<br/>Interim or final utterance"] --> normalize["Normalize words<br/>Fold accents, lowercase, expand numbers"]
+  normalize --> tail["Last 8 heard units<br/>Newest unit must end the path"]
+  tail --> search["Search around the cursor<br/>40 units behind to 300 ahead<br/>Plus rare-word seeds across the script"]
+  search --> align["Local word alignment<br/>Exact, phonetic and prefix matches"]
+  align --> classify{"Classify best path"}
+  classify --> follow["Follow · starts within 3 words<br/>Modest evidence"]
+  classify --> near["Near jump · within 30 words<br/>2 strong words at sentence start, or 3"]
+  classify --> far["Far jump<br/>3 strong words and margin<br/>Confirmed twice"]
+  classify --> back["Backtrack<br/>Jump evidence, confirmed twice<br/>Final results only"]
+  classify --> hold["Hold position<br/>Repeated misses widen the search"]
+  follow --> result["Alignment result<br/>Committed cursor, speculative lead,<br/>confidence, state and changed flag"]
+  near --> result
+  far --> result
+  back --> result
+  hold --> result
 ```
 
 ## How it works

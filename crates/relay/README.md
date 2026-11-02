@@ -9,18 +9,17 @@ Live at **https://deskprompter-relay.karthik-e5e.workers.dev** (`/health`).
 
 ## What it does
 
-```
- phone (remote) ──┐                         ┌── talent display
-                  │  wss://…/room/K7PQ2M    │
-                  ▼                         ▼
-            ┌──────────────────────────────────────┐
-            │ Worker: route, validate code, Origin │
-            │   └─► Durable Object "Room" K7PQ2M   │
-            │       hibernating WebSockets         │
-            │       join/leave · relay · limits    │
-            └──────────────────────────────────────┘
-                  ▲
- laptop (host) ───┘   …then WebRTC data channels, peer to peer
+```mermaid
+flowchart TB
+  phone["Phone remote"] <-->|"WebSocket"| worker
+  laptop["Laptop host"] <-->|"WebSocket"| worker
+  display["Network display"] <-->|"WebSocket"| worker
+  subgraph cloud["Cloudflare"]
+    worker["Worker<br/>Route and validate room code / Origin"]
+    worker <--> room["Room · Durable Object<br/>Hibernating WebSockets<br/>Presence, signaling, fallback relay and limits"]
+  end
+  laptop <-->|"WebRTC data channel · after pairing"| phone
+  laptop <-->|"WebRTC data channel · after pairing"| display
 ```
 
 1. Every six-character room code maps to one Durable Object (`idFromName`).
