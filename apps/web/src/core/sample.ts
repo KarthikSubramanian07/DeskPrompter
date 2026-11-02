@@ -1,15 +1,21 @@
-export const SAMPLE_TITLE = 'Try me: sample script'
+export const SAMPLE_TITLE = 'A quick rehearsal'
 
-export const SAMPLE_SCRIPT = `# Welcome
+export const SAMPLE_SCRIPT = `# Mic check
 
-Hi! This is a sample script, so you can try DeskPrompter before writing your own. [smile]
+Welcome. This is a practice script. There is no audience, unless your cat has opinions. [pause]
 
-Press the play button or Space, then read these lines out loud at your normal pace. Keep your eyes near the top of the screen, where the lines light up.
+Press the play button or Space to start or pause. Read at your normal pace and keep your eyes near the highlighted line.
 
 # Try skipping a line
 
-In Voice follow mode, skip the next sentence and keep reading. This is the sentence to skip. Notice how it finds your place again.
+If you chose Voice follow, skip the next paragraph and read the one after it.
 
-# Make it yours
+This paragraph could have been an email.
 
-When you're done, delete this text and paste your own script. Leave a blank line between paragraphs. Start a line with a number sign to make a heading, and put notes to yourself in square brackets. [pause] That's all there is to it.`
+Here we are. Voice follow uses the words you read to find your place. If it loses you, tap the text where you want to resume.
+
+# Your turn
+
+Press Esc or the close button to return to the editor, then replace this script with your own. Leave a blank line between paragraphs. A number sign at the start of a line makes a heading. Square brackets make notes to yourself, like this: [take a breath]
+
+You do not have to read the notes aloud. Though “take a breath” would be a bold opening.`

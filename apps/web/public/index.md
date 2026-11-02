@@ -6,7 +6,7 @@ Open the studio: https://deskprompter.pages.dev/studio
 
 ## How it works
 
-1. **Add your script.** Type it, paste it, or drop in a text file.
+1. **Add your script.** Type it, paste it, or drop in a text file. The first draft can be a first draft.
 2. **Choose how it scrolls.**
 3. **Press Start and read.** Look at the camera and talk normally.
 
@@ -18,7 +18,7 @@ Open the studio: https://deskprompter.pages.dev/studio
 
 ## Also included
 
-- **Phone remote**: scan a code and control the teleprompter from your phone.
+- **Phone remote**: scan a code and control the teleprompter from your phone. Finally, a reason to have it on set.
 - **Works with teleprompter glass**: flip the text for a mirror rig, or send it to a second screen.
 - **Captions**: after reading in Voice follow mode, download subtitles (SRT or VTT) for your video editor.
 - **Phones and tablets**: touch scrolling, a screen that stays awake on stage, and full settings on small screens.
@@ -26,6 +26,10 @@ Open the studio: https://deskprompter.pages.dev/studio
 ## Private by design
 
 Scripts are stored in your browser. Microphone audio is processed on your device unless you enable cloud recognition in settings. There are no accounts, cookies, ads or analytics. Read the details: https://deskprompter.pages.dev/privacy
+
+## The lamp
+
+It marks your reading line and reacts when you speak. It has no notes on your delivery. Hide it in settings if you prefer.
 
 ## Links
 
