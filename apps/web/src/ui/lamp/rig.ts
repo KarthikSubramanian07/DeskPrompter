@@ -1,5 +1,5 @@
 /**
- * Andon's skeleton and nervous system.
+ * The lamp's skeleton and nervous system.
  *
  * Pure math, no DOM: a two-link arm solved with inverse kinematics, a head that
  * aims its light, and a layer of springs and impulses on top so it moves like

@@ -89,7 +89,7 @@ describe('wire framing', () => {
 
   const scripts = {
     ascii: 'The quick brown fox. '.repeat(4000),
-    japanese: '吾輩は猫である。名前はまだ無い。'.repeat(3000),
+    greek: 'Καλησπέρα σας, και ευχαριστώ που μείνατε. '.repeat(1200),
     emoji: '🎬🎤 take two! '.repeat(4000),
     escapes: '"quoted"\n\t\\ and \u0001 control '.repeat(3000),
   }
