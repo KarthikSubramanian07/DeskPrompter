@@ -6,6 +6,16 @@ import { resolve } from 'node:path'
 
 const root = import.meta.dirname
 
+/**
+ * Cross-origin isolation, so Moonshine's threaded WebAssembly gets SharedArrayBuffer.
+ * Mirrors public/_headers (Cloudflare Pages). require-corp is safe here: every
+ * subresource is same-origin, and model downloads are CORS fetches.
+ */
+const isolation = {
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  'Cross-Origin-Embedder-Policy': 'require-corp',
+}
+
 /** Clean routes in dev and preview, matching Cloudflare Pages: /studio → studio.html. */
 const cleanRoutes = (): Plugin => {
   const rewrite = (req: { url?: string }, _res: unknown, next: () => void) => {
@@ -44,12 +54,18 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2,wasm}'],
         maximumFileSizeToCacheInBytes: 6_000_000,
-        globIgnores: ['**/og.png'],
+        // Moonshine's 13 MB runtime is too big to precache; its worker caches it on first use.
+        globIgnores: ['**/og.png', '**/moonshine-*.wasm'],
         // Each page is its own entry; precache's cleanURLs maps /studio → studio.html offline.
         navigateFallback: null,
       },
     }),
   ],
+  // Moonshine's Emscripten glue uses top-level await and spawns nested module
+  // workers, which the default 'iife' worker format cannot express.
+  worker: { format: 'es' },
+  server: { headers: isolation },
+  preview: { headers: isolation },
   build: {
     target: 'es2022',
     rollupOptions: {
