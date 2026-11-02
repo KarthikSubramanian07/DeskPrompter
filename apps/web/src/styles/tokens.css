@@ -1,0 +1,58 @@
+/* ─────────────────────────────────────────────────────────────
+   DeskPrompter · after hours
+   A desk at night: warm dark, paper-white words, one lamp's worth of light,
+   and a clay accent for anything that's live.
+   ───────────────────────────────────────────────────────────── */
+@import '@fontsource-variable/newsreader/opsz.css';
+@import '@fontsource-variable/newsreader/opsz-italic.css';
+@import '@fontsource-variable/hanken-grotesk/index.css';
+@import '@fontsource-variable/caveat/index.css';
+
+:root {
+  --ink: #141311;        /* the room */
+  --ink-deep: #0d0c0b;
+  --surface-1: #1c1b18;  /* raised surfaces */
+  --surface-2: #252320;
+  --rule: #2d2b27;       /* 1px hairlines */
+  --rule-soft: #22201d;
+  --paper: #f0ede4;      /* reading text */
+  --paper-dim: #c3beb2;
+  --stone: #8f8b81;      /* muted UI */
+  --stone-dim: #5f5b54;
+  --sage: #2f4a3c;       /* "on" */
+  --sage-glow: #4f7a62;
+  --amber: #e2a85c;      /* lamplight */
+  --amber-hi: #f2c27e;
+  --clay: #d97757;       /* the accent: live, cues, go */
+  --clay-deep: #c6613f;
+
+  --serif: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
+  --sans: 'Hanken Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  --hand: 'Caveat Variable', 'Bradley Hand', cursive;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+  --t-ui: 160ms;
+  --t-panel: 320ms;
+  --radius: 10px;
+
+  --bg: var(--ink);
+  --fg: var(--paper);
+  --muted: var(--stone);
+  --surface: var(--surface-1);
+  --line: var(--rule);
+
+  color-scheme: dark;
+}
+
+:root[data-theme='paper'] {
+  --bg: #f4f1ea;
+  --fg: #22211d;
+  --muted: #6a6862;
+  --surface: #fbfaf6;
+  --line: #e1ddd2;
+  --amber: #a8742f;
+  --clay: #c6613f;
+  --sage: #2f5a45;
+  color-scheme: light;
+}

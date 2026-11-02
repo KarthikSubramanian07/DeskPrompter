@@ -1,14 +1,32 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
+import type { Plugin } from 'vite'
 import preact from '@preact/preset-vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import { resolve } from 'node:path'
 
+const root = import.meta.dirname
+
+/** Clean routes in dev and preview, matching Cloudflare Pages: /studio → studio.html. */
+const cleanRoutes = (): Plugin => {
+  const rewrite = (req: { url?: string }, _res: unknown, next: () => void) => {
+    const m = req.url?.match(/^\/(studio|remote)\/?(\?.*)?$/)
+    if (m) req.url = `/${m[1]}.html${m[2] ?? ''}`
+    next()
+  }
+  return {
+    name: 'clean-routes',
+    configureServer: (s) => void s.middlewares.use(rewrite),
+    configurePreviewServer: (s) => void s.middlewares.use(rewrite),
+  }
+}
+
 export default defineConfig({
   plugins: [
+    cleanRoutes(),
     preact(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'robots.txt'],
+      includeAssets: ['icon-192.png', 'apple-touch-icon.png', 'robots.txt'],
       manifest: {
         name: 'DeskPrompter',
         short_name: 'DeskPrompter',
@@ -26,7 +44,9 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2,wasm}'],
         maximumFileSizeToCacheInBytes: 6_000_000,
-        navigateFallbackDenylist: [/^\/api/],
+        globIgnores: ['**/og.png'],
+        // Each page is its own entry; precache's cleanURLs maps /studio → studio.html offline.
+        navigateFallback: null,
       },
     }),
   ],
@@ -34,9 +54,9 @@ export default defineConfig({
     target: 'es2022',
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
-        studio: resolve(__dirname, 'studio/index.html'),
-        remote: resolve(__dirname, 'remote/index.html'),
+        main: resolve(root, 'index.html'),
+        studio: resolve(root, 'studio.html'),
+        remote: resolve(root, 'remote.html'),
       },
     },
   },

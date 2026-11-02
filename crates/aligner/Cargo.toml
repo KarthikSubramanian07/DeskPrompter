@@ -1,0 +1,24 @@
+[package]
+name = "aligner"
+version = "0.1.0"
+description = "DeskPrompter voice-follow core: script parsing and speech-to-script alignment, compiled to WebAssembly."
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde-wasm-bindgen = "0.6"
+wasm-bindgen = "0.2"
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-Os", "--enable-bulk-memory", "--enable-nontrapping-float-to-int"]
+
+[dev-dependencies]
+serde_json = "1"
+# Only to verify the generated fold table against real NFKD.
+unicode-normalization = "0.1"
