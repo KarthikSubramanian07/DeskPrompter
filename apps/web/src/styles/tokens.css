@@ -1,12 +1,15 @@
 /* ─────────────────────────────────────────────────────────────
-   DeskPrompter · after hours
-   A desk at night: warm dark, paper-white words, one lamp's worth of light,
-   and a clay accent for anything that's live.
+   DeskPrompter · day desk, night stage
+   You write on paper in daylight; you read on a dark stage under one lamp.
+   Tokens are semantic (--ink is the room, --paper is the words), so the same
+   components work in both worlds: wrap a subtree in .day or .night.
    ───────────────────────────────────────────────────────────── */
 @import '@fontsource-variable/newsreader/opsz.css';
 @import '@fontsource-variable/newsreader/opsz-italic.css';
 @import '@fontsource-variable/hanken-grotesk/index.css';
 @import '@fontsource-variable/caveat/index.css';
+@import '@fontsource/instrument-serif/latin-400.css';
+@import '@fontsource/instrument-serif/latin-400-italic.css';
 
 :root {
   --ink: #141311;        /* the room */
@@ -25,8 +28,10 @@
   --amber-hi: #f2c27e;
   --clay: #d97757;       /* the accent: live, cues, go */
   --clay-deep: #c6613f;
+  --on-clay: #1a0f0a;
 
   --serif: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
+  --display: 'Instrument Serif', 'Newsreader Variable', Georgia, serif;
   --sans: 'Hanken Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
   --hand: 'Caveat Variable', 'Bradley Hand', cursive;
 
@@ -45,14 +50,57 @@
   color-scheme: dark;
 }
 
-:root[data-theme='paper'] {
-  --bg: #f4f1ea;
-  --fg: #22211d;
-  --muted: #6a6862;
-  --surface: #fbfaf6;
-  --line: #e1ddd2;
-  --amber: #a8742f;
+.night {
+  --ink: #141311;
+  --ink-deep: #0d0c0b;
+  --surface-1: #1c1b18;
+  --surface-2: #252320;
+  --rule: #2d2b27;
+  --rule-soft: #22201d;
+  --paper: #f0ede4;
+  --paper-dim: #c3beb2;
+  --stone: #8f8b81;
+  --stone-dim: #5f5b54;
+  --sage: #2f4a3c;
+  --sage-glow: #4f7a62;
+  --amber: #e2a85c;
+  --amber-hi: #f2c27e;
+  --clay: #d97757;
+  --clay-deep: #c6613f;
+  --on-clay: #1a0f0a;
+  --bg: var(--ink);
+  --fg: var(--paper);
+  --muted: var(--stone);
+  --surface: var(--surface-1);
+  --line: var(--rule);
+  color-scheme: dark;
+}
+
+/* Daylight: ivory paper, ink words, the same clay. */
+.day {
+  --ink: #f4f1e9;
+  --ink-deep: #ebe7dc;
+  --surface-1: #fbfaf6;
+  --surface-2: #efebe1;
+  --rule: #e0dbcf;
+  --rule-soft: #ebe6da;
+  --paper: #1b1a17;
+  --paper-dim: #4a4740;
+  --stone: #74706a;
+  --stone-dim: #a8a398;
+  --sage: #cfe0d4;
+  --sage-glow: #3f7a5a;
+  --amber: #b07226;
+  --amber-hi: #8f5a17;
   --clay: #c6613f;
-  --sage: #2f5a45;
+  --clay-deep: #a94f31;
+  --on-clay: #fffaf5;
+  --bg: var(--ink);
+  --fg: var(--paper);
+  --muted: var(--stone);
+  --surface: var(--surface-1);
+  --line: var(--rule);
   color-scheme: light;
+  background: var(--bg);
+  color: var(--fg);
 }

@@ -42,7 +42,7 @@ export const DEFAULT_SETTINGS: Settings = {
   mode: 'manual',
   mirrorX: false,
   mirrorY: false,
-  theme: 'night',
+  theme: 'paper',
   countdown: true,
   camera: false,
   lamp: true,

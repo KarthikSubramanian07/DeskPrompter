@@ -8,7 +8,6 @@ import { useEffect, useMemo, useRef } from 'preact/hooks'
 import type { PrompterSnapshot } from '../../core/contracts'
 import { aligner, loadAlignerOnce, parseScript } from '../../core/parser'
 import type { Prompter } from '../../core/prompter'
-import { settings } from '../../core/store'
 import { createLocalLink } from '../../link/broadcast'
 import { Stage } from './Stage'
 
@@ -20,7 +19,6 @@ export function Display({ mirrorX }: { mirrorX: boolean }) {
   const parsed = useMemo(() => parseScript(script.value?.text ?? ''), [script.value?.text, aligner.value])
 
   useEffect(() => {
-    document.documentElement.dataset.theme = settings.value.theme
     document.title = 'Talent · DeskPrompter'
     void loadAlignerOnce()
     const link = createLocalLink('display')
