@@ -1,0 +1,13 @@
+{
+  "name": "deskprompter",
+  "private": true,
+  "type": "module",
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "dev": "bun run --cwd apps/web dev",
+    "build:wasm": "bun run scripts/build-wasm.ts",
+    "build": "bun run build:wasm && bun run --cwd apps/web build",
+    "test": "bun run --cwd apps/web test",
+    "typecheck": "bun run --cwd apps/web typecheck"
+  }
+}
