@@ -81,7 +81,7 @@ export class LampRig {
   private lift = D(0)
   private squash = D(1)
   private glow = D(0)
-  private tag = D(0)
+  private tag: Damped = D(0)
   private faceSign = 1
   private glance: Vec = { x: 0, y: 0 }
   private nextGlance = 2
@@ -120,7 +120,7 @@ export class LampRig {
   }
 
   step(dt: number): Pose {
-    dt = Math.min(dt, 1 / 20)
+    dt = clamp(dt, 1 / 1000, 1 / 20)
     this.t += dt
     this.moodSince += dt
     const t = this.t
@@ -208,7 +208,8 @@ export class LampRig {
     const ay = (fk.head.y - this.lastHeadY) / dt
     this.lastHeadX = fk.head.x
     this.lastHeadY = fk.head.y
-    this.tag.v -= (ax * 0.0009 + ay * 0.0002) * f
+    if (Number.isFinite(ax) && Number.isFinite(ay)) this.tag.v -= clamp((ax * 0.0009 + ay * 0.0002) * f, -3, 3)
+    if (!Number.isFinite(this.tag.x) || !Number.isFinite(this.tag.v)) this.tag = D(0)
     spring(this.tag, 0, 1.2, 0.12, dt)
 
     return {
