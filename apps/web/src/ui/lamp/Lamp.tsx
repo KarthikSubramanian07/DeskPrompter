@@ -1,5 +1,5 @@
 /**
- * Andon (行灯): DeskPrompter's lamp. A full-bleed SVG overlay holding the lamp
+ * The lamp: DeskPrompter's resident light. A full-bleed SVG overlay holding the lamp
  * and the light it throws. Parents steer it through a mutable handle so the
  * animation loop never re-renders Preact.
  */
@@ -137,14 +137,14 @@ export function Lamp({ handle, class: cls }: Props) {
           <stop offset="1" stop-color="#7d5c33" />
         </linearGradient>
         <linearGradient id={`${ids}-shade`} x1="0" x2="1">
-          <stop offset="0" stop-color="#8f3320" />
-          <stop offset="0.38" stop-color="#e2694c" />
-          <stop offset="0.62" stop-color="#d4553a" />
-          <stop offset="1" stop-color="#7e2c1b" />
+          <stop offset="0" stop-color="#9a4a2f" />
+          <stop offset="0.38" stop-color="#e8896a" />
+          <stop offset="0.62" stop-color="#d97757" />
+          <stop offset="1" stop-color="#8a3f27" />
         </linearGradient>
         <linearGradient id={`${ids}-base`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#3a342d" />
-          <stop offset="1" stop-color="#16130f" />
+          <stop offset="0" stop-color="#3a3731" />
+          <stop offset="1" stop-color="#161513" />
         </linearGradient>
         <radialGradient id={`${ids}-bulb`}>
           <stop offset="0" stop-color="#fff6e0" />
@@ -175,11 +175,11 @@ export function Lamp({ handle, class: cls }: Props) {
       <g ref={root}>
         <ellipse cx="0" cy="3" rx="78" ry="9" fill={`url(#${ids}-shadow)`} />
         <g ref={body}>
-          {/* base: a lacquered dome with a brass rim and a vermilion seal for a switch */}
+          {/* base: a weighted dome with a brass rim and a clay switch */}
           <path d="M-54,0 C-54,-11 -36,-18 0,-18 C36,-18 54,-11 54,0 Z" fill={`url(#${ids}-base)`} />
           <path d="M-54,0 L54,0" stroke="#b88a4a" stroke-width="2.2" stroke-linecap="round" />
           <path d="M-44,-9 C-30,-15 -12,-16.5 4,-16.6" stroke="#ffffff" stroke-opacity="0.08" stroke-width="2" fill="none" />
-          <rect x="20" y="-10.5" width="9" height="7.5" rx="1.2" fill="#d4553a" />
+          <rect x="20" y="-10.5" width="9" height="7.5" rx="1.2" fill="#d97757" />
           <circle cx="0" cy={GEO.shoulderY} r="7.5" fill={`url(#${ids}-brass)`} />
 
           <g ref={lower}>
@@ -194,7 +194,7 @@ export function Lamp({ handle, class: cls }: Props) {
               <g ref={head}>
                 <circle cx="0" cy="0" r="6.5" fill={`url(#${ids}-brass)`} />
                 <rect x="-6" y="-14" width="12" height="11" rx="2.5" fill="#2a241d" />
-                {/* the shade: a lacquered bell */}
+                {/* the shade: an enamelled bell */}
                 <path d="M-10,-10 C-13,-28 -28,-44 -35,-62 L35,-62 C28,-44 13,-28 10,-10 Z" fill={`url(#${ids}-shade)`} />
                 <path d="M-6,-14 C-9,-28 -20,-42 -26,-56" stroke="#ffb59a" stroke-opacity="0.35" stroke-width="2" fill="none" stroke-linecap="round" />
                 <ellipse ref={rim} cx="0" cy="-62" rx="35" ry="6.5" fill="#ffe2b0" />
@@ -202,8 +202,9 @@ export function Lamp({ handle, class: cls }: Props) {
                 <circle ref={bulb} cx="0" cy="-60" r="9.5" fill="#fff4dc" />
                 <g ref={tag}>
                   <path d="M0,0 L0,22" stroke="#cdbf9e" stroke-width="0.9" />
-                  <rect x="-7" y="22" width="14" height="19" rx="1.5" fill="#ece6d9" />
-                  <text x="0" y="36" text-anchor="middle" class="lamp-tag">灯</text>
+                  <rect x="-7" y="22" width="14" height="19" rx="1.5" fill="#f0ede4" />
+                  <circle cx="0" cy="25.5" r="1.3" fill="#1c1b18" />
+                  <text x="0" y="37" text-anchor="middle" class="lamp-tag">hi</text>
                 </g>
               </g>
             </g>

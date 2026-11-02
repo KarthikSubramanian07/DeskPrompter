@@ -29,7 +29,7 @@ export function CameraCheck() {
   return (
     <figure class={`cam cam-${state}`} aria-label="Camera check">
       <video ref={video} autoplay playsInline muted />
-      {state !== 'on' && <figcaption class="label">{state === 'denied' ? 'Camera unavailable' : 'Camera…'}</figcaption>}
+      {state !== 'on' && <figcaption>{state === 'denied' ? 'Camera unavailable' : 'Camera…'}</figcaption>}
       <span class="cam-dot" aria-hidden="true" />
     </figure>
   )

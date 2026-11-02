@@ -1,6 +1,6 @@
 /**
  * The writing desk: scripts on the left, the page in the middle, the setup on
- * the right, and Andon keeping you company in the corner.
+ * the right, and the lamp keeping you company in the corner.
  */
 import { useComputed } from '@preact/signals'
 import { useEffect, useMemo, useRef } from 'preact/hooks'
@@ -21,8 +21,7 @@ import { speedToWpm } from '../../core/prompter'
 import { createLampHandle, Lamp } from '../lamp/Lamp'
 import { caretXY } from './caret'
 import { Section, Segmented, Slider, Toggle, Kbd } from './controls'
-
-const SUITS = ['♠', '♥', '♦', '♣']
+import { ModeIcon } from '../icons'
 
 function ago(t: number): string {
   const s = (Date.now() - t) / 1000
@@ -36,20 +35,16 @@ function Rail() {
   return (
     <aside class="rail">
       <div class="rail-head">
-        <span class="label">
-          <span class="kanji">台本</span> Scripts
-        </span>
+        <span class="rail-heading">Scripts</span>
         <button class="icon-btn" title="New script" aria-label="New script" onClick={() => newScript()}>
           +
         </button>
       </div>
       <ul class="rail-list">
-        {scripts.value.map((s, i) => (
+        {scripts.value.map((s) => (
           <li key={s.id}>
             <button class={`rail-item ${s.id === currentId.value ? 'on' : ''}`} onClick={() => selectScript(s.id)}>
-              <span class="rail-suit" aria-hidden="true">
-                {SUITS[i % 4]}
-              </span>
+              <span class="rail-dot" aria-hidden="true" />
               <span class="rail-title">{s.title || 'Untitled'}</span>
               <span class="rail-meta">{ago(s.updatedAt)}</span>
             </button>
@@ -66,7 +61,7 @@ function Rail() {
           </li>
         ))}
       </ul>
-      <p class="rail-foot label">Stored on this device only</p>
+      <p class="rail-foot">Saved in this browser. Never uploaded.</p>
     </aside>
   )
 }
@@ -89,7 +84,7 @@ function Page({ script }: { script: Script }) {
         aria-label="Script title"
         onInput={(e) => updateScript(script.id, { title: (e.target as HTMLInputElement).value })}
       />
-      <p class="page-meta label">
+      <p class="page-meta">
         <span>{stats.words.toLocaleString()} words</span>
         <span>·</span>
         <span>
@@ -118,7 +113,7 @@ function Page({ script }: { script: Script }) {
         aria-label="Script"
         onInput={(e) => updateScript(script.id, { text: (e.target as HTMLTextAreaElement).value })}
       />
-      <p class="page-hint label">
+      <p class="page-hint">
         <span>
           <Kbd>#</Kbd> section
         </span>
@@ -138,15 +133,15 @@ function Setup() {
   const s = settings.value
   return (
     <aside class="setup">
-      <Section label="Motion" kanji="動">
+      <Section label="Motion">
         <Segmented
           label="Scroll mode"
           value={s.mode}
           onChange={(mode) => patchSettings({ mode })}
           options={[
-            { value: 'manual', label: 'Steady', kanji: '手', title: 'Scrolls at a steady speed' },
-            { value: 'voice', label: 'Voice', kanji: '声', title: 'Follows your words' },
-            { value: 'breath', label: 'Breath', kanji: '息', title: 'Moves while you speak, rests when you pause' },
+            { value: 'manual', label: 'Steady', icon: <ModeIcon mode="manual" />, title: 'Scrolls at a steady speed' },
+            { value: 'voice', label: 'Voice', icon: <ModeIcon mode="voice" />, title: 'Follows your words' },
+            { value: 'breath', label: 'Breath', icon: <ModeIcon mode="breath" />, title: 'Moves while you speak, rests when you pause' },
           ]}
         />
         <p class="setup-note">
@@ -159,22 +154,22 @@ function Setup() {
         )}
       </Section>
 
-      <Section label="Type" kanji="字">
+      <Section label="Type">
         <Slider label="Size" value={s.fontSize} min={28} max={120} format={(v) => `${v}px`} onInput={(fontSize) => patchSettings({ fontSize })} />
         <Slider label="Measure" value={s.measure} min={14} max={48} format={(v) => `${v} ch`} onInput={(measure) => patchSettings({ measure })} />
         <Slider label="Leading" value={s.lineHeight} min={1.05} max={1.9} step={0.01} format={(v) => v.toFixed(2)} onInput={(lineHeight) => patchSettings({ lineHeight })} />
       </Section>
 
-      <Section label="Glass" kanji="鏡">
+      <Section label="Glass">
         <Slider label="Reading line" value={Math.round(s.eyeline * 100)} min={12} max={70} format={(v) => `${v}% down`} onInput={(v) => patchSettings({ eyeline: v / 100 })} />
         <Toggle label="Mirror horizontally" hint="For beam-splitter glass" checked={s.mirrorX} onChange={(mirrorX) => patchSettings({ mirrorX })} />
         <Toggle label="Mirror vertically" checked={s.mirrorY} onChange={(mirrorY) => patchSettings({ mirrorY })} />
       </Section>
 
-      <Section label="House" kanji="灯">
-        <Toggle label="Countdown" hint="三 二 一 before you go" checked={s.countdown} onChange={(countdown) => patchSettings({ countdown })} />
+      <Section label="Extras">
+        <Toggle label="Countdown" hint="3, 2, 1 before you start" checked={s.countdown} onChange={(countdown) => patchSettings({ countdown })} />
         <Toggle label="Camera check" hint="See yourself under the lens" checked={s.camera} onChange={(camera) => patchSettings({ camera })} />
-        <Toggle label="Andon the lamp" checked={s.lamp} onChange={(lamp) => patchSettings({ lamp })} />
+        <Toggle label="The lamp" hint="It nods along. It means well." checked={s.lamp} onChange={(lamp) => patchSettings({ lamp })} />
         <Toggle label="Paper theme" checked={s.theme === 'paper'} onChange={(v) => patchSettings({ theme: v ? 'paper' : 'night' })} />
       </Section>
     </aside>

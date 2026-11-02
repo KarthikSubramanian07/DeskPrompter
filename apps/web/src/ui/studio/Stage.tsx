@@ -1,5 +1,5 @@
 /**
- * The stage: full-bleed prompter. Text glides under a reading line, Andon hangs
+ * The stage: full-bleed prompter. Text glides under a reading line, the lamp hangs
  * from the top edge and lights it, and the HUD stays out of the way.
  */
 import { useSignal } from '@preact/signals'
@@ -11,6 +11,7 @@ import { estimateRemainingMs, formatClock } from '../../core/timing'
 import { createLampHandle, Lamp } from '../lamp/Lamp'
 import { CameraCheck } from './CameraCheck'
 import { Kbd } from './controls'
+import { ModeIcon } from '../icons'
 
 export interface StageApi {
   prompter: Prompter
@@ -29,10 +30,10 @@ export interface StageProps {
   display?: boolean
 }
 
-const MODES: { value: PrompterMode; kanji: string; label: string }[] = [
-  { value: 'manual', kanji: '手', label: 'Steady' },
-  { value: 'voice', kanji: '声', label: 'Voice' },
-  { value: 'breath', kanji: '息', label: 'Breath' },
+const MODES: { value: PrompterMode; label: string }[] = [
+  { value: 'manual', label: 'Steady' },
+  { value: 'voice', label: 'Voice' },
+  { value: 'breath', label: 'Breath' },
 ]
 
 export function Stage({ script, parsed, onExit, onReady, level, status, display }: StageProps) {
@@ -64,7 +65,7 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display 
       progress.value = t.progress
       playing.value = t.playing
       wordAt.value = t.wordAtLine
-      // Andon nods when you reach a new paragraph.
+      // The lamp nods when you reach a new paragraph.
       const para = column.current?.querySelector(`.w[data-wi="${t.wordAtLine}"]`)?.closest('.pr-para')
       const first = para?.querySelector<HTMLElement>('.w')?.dataset.wi
       if (first !== undefined && Number(first) !== lastBlockWord) {
@@ -292,10 +293,10 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display 
 
       {countdown.value !== null && (
         <div class="countdown" role="status" aria-live="assertive">
-          <span class="countdown-n kanji" key={countdown.value}>
-            {['', '一', '二', '三'][countdown.value]}
+          <span class="countdown-n" key={countdown.value}>
+            {countdown.value}
           </span>
-          <span class="label">Esc to cancel</span>
+          <span class="countdown-hint">Esc to cancel</span>
         </div>
       )}
 
@@ -316,7 +317,7 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display 
           <div class="hud-modes">
             {MODES.map((m, i) => (
               <button class={`hud-mode ${s.mode === m.value ? 'on' : ''}`} title={`${m.label} (${i + 1})`} onClick={() => patchSettings({ mode: m.value })}>
-                <span class="kanji">{m.kanji}</span>
+                <ModeIcon mode={m.value} />
               </button>
             ))}
           </div>
@@ -370,9 +371,9 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display 
           </button>
         </div>
       )}
-      {!display && status && <div class="stage-status label">{status}</div>}
+      {!display && status && <div class="stage-status">{status}</div>}
       {!display && !playing.value && countdown.value === null && (
-        <p class="stage-hint label">
+        <p class="stage-hint">
           <Kbd>space</Kbd> go · <Kbd>←</Kbd>
           <Kbd>→</Kbd> lines · <Kbd>esc</Kbd> desk
         </p>

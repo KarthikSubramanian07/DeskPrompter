@@ -47,11 +47,10 @@ function Studio() {
               <span>DeskPrompter</span>
             </a>
             <div class="bar-right">
-              <span class="bar-privacy label" title="Scripts are stored in this browser. Nothing is uploaded.">
-                <span class="dot-felt" /> Offline · private
+              <span class="bar-privacy" title="Scripts are stored in this browser. Nothing is uploaded.">
+                <span class="dot-sage" /> Private, works offline
               </span>
               <button class="btn-go" onClick={() => (view.value = 'stage')}>
-                <span class="kanji">開演</span>
                 <span>Go</span>
                 <span class="btn-go-kbd">
                   <Kbd>⌘</Kbd>

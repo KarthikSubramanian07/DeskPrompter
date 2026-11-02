@@ -14,16 +14,16 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-feature-settings: 'ss01', 'cv11';
+  font-feature-settings: 'kern';
 }
 
-::selection { background: color-mix(in oklab, var(--whisky) 40%, transparent); color: var(--washi); }
+::selection { background: color-mix(in oklab, var(--amber) 40%, transparent); color: var(--paper); }
 
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
 input, textarea, select { font: inherit; color: inherit; }
 a { color: inherit; }
 
-:focus-visible { outline: 1px solid var(--whisky); outline-offset: 3px; border-radius: 4px; }
+:focus-visible { outline: 1px solid var(--amber); outline-offset: 3px; border-radius: 4px; }
 
 /* Grain: Anthropic-style fractal noise, very faint. Never over the prompter text. */
 .grain::after {
@@ -36,14 +36,14 @@ a { color: inherit; }
 }
 
 .label {
-  font-family: var(--mono);
-  font-size: 10.5px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  letter-spacing: 0;
   color: var(--muted);
 }
 
-.kanji { font-family: var(--mincho); font-weight: 500; letter-spacing: 0; }
+.hand { font-family: var(--hand); font-weight: 500; letter-spacing: 0; }
+
 
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
