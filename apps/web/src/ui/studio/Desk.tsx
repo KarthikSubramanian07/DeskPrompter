@@ -2,7 +2,7 @@
  * The writing desk: scripts on the left, the page in the middle, the setup on
  * the right, and the lamp keeping you company in the corner.
  */
-import { useComputed } from '@preact/signals'
+import { useComputed, useSignal } from '@preact/signals'
 import { useEffect, useMemo, useRef } from 'preact/hooks'
 import { parseScript } from '../../core/parser'
 import {
@@ -20,6 +20,7 @@ import { formatClock } from '../../core/timing'
 import { speedToWpm } from '../../core/prompter'
 import { createLampHandle, Lamp } from '../lamp/Lamp'
 import { caretXY } from './caret'
+import { IMPORT_ACCEPT, isImportable, readScriptFile } from '../../core/importScript'
 import { Section, Segmented, Slider, Toggle, Kbd } from './controls'
 import { ModeIcon } from '../icons'
 
@@ -36,6 +37,24 @@ function Rail() {
     <aside class="rail">
       <div class="rail-head">
         <span class="rail-heading">Scripts</span>
+        <label class="icon-btn" title="Import a .txt or .md file" aria-label="Import a script file">
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+            <path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <input
+            type="file"
+            accept={IMPORT_ACCEPT}
+            class="sr-only"
+            onChange={async (e) => {
+              const input = e.target as HTMLInputElement
+              for (const f of Array.from(input.files ?? [])) if (isImportable(f)) {
+                const { title, text } = await readScriptFile(f)
+                newScript(title, text)
+              }
+              input.value = ''
+            }}
+          />
+        </label>
         <button class="icon-btn" title="New script" aria-label="New script" onClick={() => newScript()}>
           +
         </button>
@@ -201,6 +220,7 @@ export function Desk() {
   const script = useComputed(() => scripts.value.find((s) => s.id === currentId.value))
   const wrap = useRef<HTMLDivElement>(null)
   const handle = useRef(createLampHandle({ beamStrength: 0.55 })).current
+  const dragging = useSignal(false)
 
   useEffect(() => {
     const el = wrap.current!
@@ -265,7 +285,27 @@ export function Desk() {
   return (
     <div class="desk">
       <Rail />
-      <div class="desk-center" ref={wrap}>
+      <div
+        class={`desk-center ${dragging.value ? 'is-dropping' : ''}`}
+        ref={wrap}
+        onDragOver={(e) => {
+          if (!e.dataTransfer?.types.includes('Files')) return
+          e.preventDefault()
+          dragging.value = true
+        }}
+        onDragLeave={(e) => {
+          if (e.currentTarget === e.target) dragging.value = false
+        }}
+        onDrop={async (e) => {
+          e.preventDefault()
+          dragging.value = false
+          for (const f of Array.from(e.dataTransfer?.files ?? [])) if (isImportable(f)) {
+            const { title, text } = await readScriptFile(f)
+            newScript(title, text)
+          }
+        }}
+      >
+        {dragging.value && <div class="drop-hint">Drop a .txt or .md file to add it as a new script</div>}
         {script.value && <Page script={script.value} />}
         {settings.value.lamp && <Lamp handle={handle} class="desk-lamp" />}
       </div>

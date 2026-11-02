@@ -285,3 +285,16 @@ body { overflow: hidden; }
 .display-wait-keys { font-size: 13px; margin-top: 14px !important; }
 .hud-text { height: 28px; padding: 0 8px; border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--paper-dim); }
 .hud-text:hover { color: var(--paper); background: #ffffff0a; }
+
+/* ───────────── import ───────────── */
+label.icon-btn { cursor: pointer; }
+.desk-center.is-dropping::after {
+  content: ''; position: absolute; inset: 14px; z-index: 5; pointer-events: none;
+  border: 1.5px dashed var(--clay); border-radius: 16px;
+  background: color-mix(in oklab, var(--clay) 6%, transparent);
+}
+.drop-hint {
+  position: absolute; left: 50%; top: 50%; z-index: 6; transform: translate(-50%, -50%); pointer-events: none;
+  padding: 10px 16px; border-radius: 999px; background: var(--surface-1); border: 1px solid var(--line);
+  font-size: 14px; color: var(--fg); box-shadow: 0 20px 40px -24px rgb(30 20 10 / 0.4);
+}
