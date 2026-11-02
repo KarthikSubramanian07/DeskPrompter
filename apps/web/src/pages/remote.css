@@ -338,6 +338,13 @@ body {
   font-family: var(--r-mono);
   font-size: 22px;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.speed__unit {
+  margin-left: 3px;
+  font-size: 11px;
+  color: var(--r-muted);
 }
 
 /* ── Join form ── */
