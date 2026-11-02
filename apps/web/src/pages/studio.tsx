@@ -5,13 +5,15 @@ import '../styles/base.css'
 import '../pwa'
 import './studio.css'
 import { aligner, loadAlignerOnce, parseScript } from '../core/parser'
-import { currentId, hydrate, ready, scripts, settings } from '../core/store'
+import { currentId, hydrate, newScript, ready, scripts, settings } from '../core/store'
 import { Mark } from '../ui/Mark'
 import { Desk, deskSheet } from '../ui/studio/Desk'
 import { Stage } from '../ui/studio/Stage'
 import { Kbd } from '../ui/studio/controls'
 import { PairButton, TalentButton } from '../ui/studio/Pair'
 import { HostBridge } from '../core/bridge'
+import { mountPoint } from '../mount'
+import { readLinkedScript } from '../core/deeplink'
 import { Display } from '../ui/studio/Display'
 
 const params = new URLSearchParams(location.search)
@@ -26,7 +28,14 @@ function Studio() {
   const parsed = useMemo(() => parseScript(text), [text, aligner.value])
 
   useEffect(() => {
-    void hydrate()
+    void hydrate().then(() => {
+      // A script handed over in the link (#title=...&script=...) becomes a new script.
+      const linked = readLinkedScript(location.hash)
+      if (linked) {
+        newScript(linked.title, linked.text)
+        history.replaceState(null, '', location.pathname + location.search)
+      }
+    })
     void loadAlignerOnce()
   }, [])
 
@@ -87,4 +96,4 @@ function Studio() {
   )
 }
 
-render(IS_DISPLAY ? <Display mirrorX={params.get('mirror') === '1'} /> : <Studio />, document.getElementById('app')!)
+render(IS_DISPLAY ? <Display mirrorX={params.get('mirror') === '1'} /> : <Studio />, mountPoint())

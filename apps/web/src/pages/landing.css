@@ -205,6 +205,9 @@
 .foot-brand { display: inline-flex; align-items: center; gap: 8px; font-family: var(--display); font-size: 20px; }
 .foot-brand .mark { color: var(--clay); }
 .foot-note { font-size: 13px; color: var(--stone); }
+.foot-links { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; }
+.foot-links a { color: var(--paper-dim); text-decoration: none; }
+.foot-links a:hover { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
 
 @media (max-width: 900px) {
   .mode-grid, .fine { grid-template-columns: 1fr; }
