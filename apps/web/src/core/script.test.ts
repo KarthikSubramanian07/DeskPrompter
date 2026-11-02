@@ -8,6 +8,23 @@ Second line, same paragraph.
 
 Final 🎤 thought.`
 
+describe('parseScriptTS rules shared with the Rust parser', () => {
+  it('makes a # line inside a paragraph its own heading', () => {
+    const p = parseScriptTS('one two\n# Mid\nthree four')
+    expect(p.blocks.map((b) => b.kind)).toEqual(['para', 'heading', 'para'])
+    expect(p.wordCount).toBe(4)
+  })
+  it('gives bare punctuation and emoji no word index', () => {
+    const p = parseScriptTS('wait — 🎤 go')
+    expect(p.blocks[0]!.tokens.map((t) => t.wi)).toEqual([0, -1, -1, 1])
+  })
+  it('keeps an unclosed bracket inside its word, and cues stop at line breaks', () => {
+    const p = parseScriptTS('a[b c\n[not\nclosed] d')
+    expect(p.blocks[0]!.tokens.every((t) => t.kind === 'word')).toBe(true)
+    expect(p.blocks[0]!.tokens[0]!.text).toBe('a[b')
+  })
+})
+
 describe('parseScriptTS', () => {
   const p = parseScriptTS(src)
   it('splits blocks and kinds', () => {
