@@ -59,7 +59,10 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
   const parsedRef = useRef(parsed)
   parsedRef.current = parsed
   const live = listener.current
-  level = level ?? (live && live.state.value !== 'off' ? live.level.value : undefined)
+  if (!level && live && live.state.value !== 'off') {
+    const v = live.level.value
+    level = { value: v.level, speaking: v.speaking }
+  }
   status = status ?? (live?.status.value || undefined)
   const levelRef = useRef(level)
   levelRef.current = level
