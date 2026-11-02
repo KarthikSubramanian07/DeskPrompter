@@ -6,7 +6,7 @@
 import { useSignal } from '@preact/signals'
 import { useEffect, useMemo, useRef } from 'preact/hooks'
 import type { PrompterSnapshot } from '../../core/contracts'
-import { parseScriptTS } from '../../core/script'
+import { aligner, loadAlignerOnce, parseScript } from '../../core/parser'
 import type { Prompter } from '../../core/prompter'
 import { settings } from '../../core/store'
 import { createLocalLink } from '../../link/broadcast'
@@ -17,11 +17,12 @@ export function Display({ mirrorX }: { mirrorX: boolean }) {
   const mirror = useSignal({ x: mirrorX, y: false })
   const prompter = useRef<Prompter | null>(null)
   const last = useRef<PrompterSnapshot | null>(null)
-  const parsed = useMemo(() => parseScriptTS(script.value?.text ?? ''), [script.value?.text])
+  const parsed = useMemo(() => parseScript(script.value?.text ?? ''), [script.value?.text, aligner.value])
 
   useEffect(() => {
     document.documentElement.dataset.theme = settings.value.theme
     document.title = 'Talent · DeskPrompter'
+    void loadAlignerOnce()
     const link = createLocalLink('display')
     const off = link.onMessage((m) => {
       if (m.t === 'script') script.value = { title: m.title, text: m.text }

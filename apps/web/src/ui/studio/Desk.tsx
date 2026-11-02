@@ -4,7 +4,7 @@
  */
 import { useComputed } from '@preact/signals'
 import { useEffect, useMemo, useRef } from 'preact/hooks'
-import { parseScriptTS } from '../../core/script'
+import { parseScript } from '../../core/parser'
 import {
   currentId,
   deleteScript,
@@ -69,7 +69,7 @@ function Rail() {
 function Page({ script }: { script: Script }) {
   const ta = useRef<HTMLTextAreaElement>(null)
   const stats = useMemo(() => {
-    const p = parseScriptTS(script.text)
+    const p = parseScript(script.text)
     const cues = p.blocks.reduce((n, b) => n + b.tokens.filter((t) => t.kind === 'cue').length, 0)
     return { words: p.wordCount, cues, sections: p.blocks.filter((b) => b.kind === 'heading').length }
   }, [script.text])

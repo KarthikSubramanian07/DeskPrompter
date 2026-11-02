@@ -3,7 +3,7 @@ import { useComputed, useSignal } from '@preact/signals'
 import { useEffect, useMemo } from 'preact/hooks'
 import '../styles/base.css'
 import './studio.css'
-import { parseScriptTS } from '../core/script'
+import { aligner, loadAlignerOnce, parseScript } from '../core/parser'
 import { currentId, hydrate, ready, scripts, settings } from '../core/store'
 import { Mark } from '../ui/Mark'
 import { Desk } from '../ui/studio/Desk'
@@ -22,10 +22,11 @@ function Studio() {
   const view = useSignal<'desk' | 'stage'>('desk')
   const script = useComputed(() => scripts.value.find((s) => s.id === currentId.value))
   const text = script.value?.text ?? ''
-  const parsed = useMemo(() => parseScriptTS(text), [text])
+  const parsed = useMemo(() => parseScript(text), [text, aligner.value])
 
   useEffect(() => {
     void hydrate()
+    void loadAlignerOnce()
   }, [])
 
   useEffect(() => {

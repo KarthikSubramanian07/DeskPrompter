@@ -1,43 +1,91 @@
 /**
- * Script parsing. The canonical parser lives in Rust (crates/aligner) so the
- * tracker and the renderer agree on every word index. This TypeScript twin is
- * the fallback for manual mode if WebAssembly can't load, and follows the
- * same rules:
- *   - blocks are separated by blank lines
- *   - a block whose first line starts with `#` is a heading (rendered, never tracked)
- *   - `[bracketed text]` is a cue token (rendered, never tracked)
- *   - every other whitespace-separated run is a spoken word with a word index
+ * Script parsing. The canonical parser is Rust (crates/aligner/src/parse.rs),
+ * so the tracker and the renderer agree on every word index. This TypeScript
+ * twin follows the same rules and is used until the wasm loads, or if it can't:
+ *   - blank lines separate blocks
+ *   - a line whose first non-space character is `#` is a heading block on its own
+ *   - `[bracketed text]` on one line is a cue token (shown, never tracked)
+ *   - words split on whitespace and keep their punctuation; only words with
+ *     letters or digits, in paragraphs, get a word index
  */
 import type { ParsedScript, ScriptBlock, ScriptToken } from './contracts'
 
-export function parseScriptTS(text: string): ParsedScript {
-  const blocks: ScriptBlock[] = []
-  let wi = 0
-  const blockRe = /\S[\s\S]*?(?=\n[ \t]*\n|\s*$)/g
-  for (const m of text.matchAll(blockRe)) {
-    const start = m.index ?? 0
-    const raw = m[0]
-    const end = start + raw.length
-    const heading = raw.startsWith('#')
-    const tokens: ScriptToken[] = []
-    // Skip the leading #'s of a heading.
-    const bodyOffset = heading ? raw.match(/^#+\s*/)![0].length : 0
-    const body = raw.slice(bodyOffset)
-    for (const t of body.matchAll(/\[[^\]\n]*\]|[^\s[]+|\[/g)) {
-      const s = start + bodyOffset + (t.index ?? 0)
-      const value = t[0]
-      const isCue = value.startsWith('[') && value.endsWith(']') && value.length > 1
-      tokens.push({
-        kind: isCue ? 'cue' : 'word',
-        text: value,
-        start: s,
-        end: s + value.length,
-        wi: isCue || heading ? -1 : wi++,
-      })
+const SPEAKABLE = /[\p{L}\p{N}]/u
+
+type LineKind = 'blank' | 'heading' | 'text'
+
+function cueEnd(text: string, p: number, to: number): number {
+  const close = text.indexOf(']', p)
+  if (close < 0 || close >= to) return -1
+  return text.slice(p, close).includes('\n') ? -1 : close + 1
+}
+
+function tokenize(text: string, from: number, to: number, spoken: boolean, next: { wi: number }): ScriptToken[] {
+  const tokens: ScriptToken[] = []
+  let p = from
+  while (p < to) {
+    const c = text[p]!
+    if (/\s/.test(c)) {
+      p++
+      continue
     }
-    blocks.push({ kind: heading ? 'heading' : 'para', start, end, tokens })
+    if (c === '[') {
+      const end = cueEnd(text, p, to)
+      if (end > 0) {
+        tokens.push({ kind: 'cue', text: text.slice(p, end), start: p, end, wi: -1 })
+        p = end
+        continue
+      }
+    }
+    let q = p
+    while (q < to) {
+      const ch = text[q]!
+      if (/\s/.test(ch)) break
+      if (ch === '[' && q > p && cueEnd(text, q, to) > 0) break
+      q++
+    }
+    const word = text.slice(p, q)
+    tokens.push({ kind: 'word', text: word, start: p, end: q, wi: spoken && SPEAKABLE.test(word) ? next.wi++ : -1 })
+    p = q
   }
-  return { blocks, wordCount: wi }
+  return tokens
+}
+
+export function parseScriptTS(text: string): ParsedScript {
+  const lines: { a: number; b: number; kind: LineKind }[] = []
+  let ls = 0
+  for (let i = 0; i <= text.length; i++) {
+    if (i === text.length || text[i] === '\n') {
+      const t = text.slice(ls, i).trim()
+      lines.push({ a: ls, b: i, kind: t === '' ? 'blank' : t.startsWith('#') ? 'heading' : 'text' })
+      ls = i + 1
+    }
+  }
+  const blocks: ScriptBlock[] = []
+  const next = { wi: 0 }
+  const lead = (a: number, b: number) => a + (text.slice(a, b).length - text.slice(a, b).trimStart().length)
+  const trail = (a: number, b: number) => a + text.slice(a, b).trimEnd().length
+  for (let i = 0; i < lines.length; ) {
+    const l = lines[i]!
+    if (l.kind === 'blank') {
+      i++
+    } else if (l.kind === 'heading') {
+      const hashStart = lead(l.a, l.b)
+      let afterHashes = hashStart
+      while (text[afterHashes] === '#') afterHashes++
+      const end = trail(l.a, l.b)
+      blocks.push({ kind: 'heading', start: hashStart, end, tokens: tokenize(text, afterHashes, end, false, next) })
+      i++
+    } else {
+      let j = i
+      while (j + 1 < lines.length && lines[j + 1]!.kind === 'text') j++
+      const start = lead(l.a, l.b)
+      const end = trail(lines[j]!.a, lines[j]!.b)
+      blocks.push({ kind: 'para', start, end, tokens: tokenize(text, start, end, true, next) })
+      i = j + 1
+    }
+  }
+  return { blocks, wordCount: next.wi }
 }
 
 /** Flat list of spoken words in order, for hints and the remote's glance line. */
