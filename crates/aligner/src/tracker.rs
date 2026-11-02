@@ -6,14 +6,14 @@
 //! newest heard unit (or the one before, with a penalty) count, so the answer
 //! is always "where is the reader *now*". Each candidate is then classified:
 //!
-//! - **follow** — the path starts at or just past where we were (≤ 3 words
+//! - **follow**: the path starts at or just past where we were (≤ 3 words
 //!   ahead): accept on modest evidence.
-//! - **near jump** (≤ 30 words) — needs 2 strong words starting at a sentence
+//! - **near jump** (≤ 30 words): needs 2 strong words starting at a sentence
 //!   start, or 3 strong words anywhere, and a clear margin over the
 //!   runner-up.
-//! - **far jump** — 3 strong words, more evidence, a wider margin, and the
+//! - **far jump**: 3 strong words, more evidence, a wider margin, and the
 //!   same verdict on 2 consecutive updates.
-//! - **backtrack** — any move behind the committed cursor: jump-level
+//! - **backtrack**: any move behind the committed cursor: jump-level
 //!   evidence, always confirmed twice, and only committed by a final result.
 //!
 //! Interim results move only `lead` (speculative, ≥ cursor); finals commit

@@ -445,7 +445,7 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
             </div>
           ) : (
             <span class="hud-num">
-              {wpm || '—'}
+              {wpm || '…'}
               <span class="hud-unit">wpm</span>
             </span>
           )}

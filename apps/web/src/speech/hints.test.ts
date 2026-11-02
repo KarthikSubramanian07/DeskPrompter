@@ -8,7 +8,7 @@ describe('cleanWord', () => {
     expect(cleanWord('“Kubernetes,”')).toBe('Kubernetes')
     expect(cleanWord('don’t')).toBe("don't")
     expect(cleanWord('(on-device).')).toBe('on-device')
-    expect(cleanWord('—')).toBe('')
+    expect(cleanWord('\u2014')).toBe('')
   })
 })
 

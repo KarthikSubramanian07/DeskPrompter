@@ -109,7 +109,7 @@ function Page({ script }: { script: Script }) {
         class="page-text"
         value={script.text}
         spellcheck
-        placeholder={'Paste or write your script.\n\n# A heading starts a section\n[smile] Brackets are cues — shown, never read.\nA blank line starts a new paragraph.'}
+        placeholder={'Paste or write your script.\n\n# A heading starts a section\n[smile] Brackets are cues: shown, never read.\nA blank line starts a new paragraph.'}
         aria-label="Script"
         onInput={(e) => updateScript(script.id, { text: (e.target as HTMLTextAreaElement).value })}
       />
@@ -146,7 +146,7 @@ function Setup() {
         />
         <p class="setup-note">
           {s.mode === 'manual' && 'A steady glide. Space to pause, arrows to adjust.'}
-          {s.mode === 'voice' && 'Listens and follows your place in the script. Skip, stumble, ad-lib — it keeps up.'}
+          {s.mode === 'voice' && 'Listens and follows your place in the script. Skip, stumble or ad-lib, and it keeps up.'}
           {s.mode === 'breath' && 'No speech recognition. Scrolls while you talk and settles when you stop.'}
         </p>
         {s.mode !== 'voice' && (

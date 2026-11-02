@@ -7,7 +7,7 @@
 //!   Cues are shown, never tracked: `wi = -1`.
 //! - Words split on whitespace and keep attached punctuation for display.
 //!   Only words with speakable content in `para` blocks get a word index;
-//!   heading words and bare punctuation (`—`, `…`, emoji) get `wi = -1`.
+//!   heading words and bare punctuation (dashes, ellipses, emoji) get `wi = -1`.
 //! - `start`/`end` are UTF-16 code-unit offsets, so in JS
 //!   `script.slice(start, end) === text`.
 
