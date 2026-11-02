@@ -16,3 +16,21 @@ describe('settledCursor', () => {
     expect(settledCursor(r({ cursor: 3, lead: 12, confidence: 0.2 }))).toBe(3)
   })
 })
+
+import { SILENT_ENGINE_MS, shouldFallBack } from './listen'
+
+describe('shouldFallBack', () => {
+  it('gives up on a Chrome engine that hears speech but returns nothing', () => {
+    expect(shouldFallBack('chrome-local', SILENT_ENGINE_MS, 0)).toBe(true)
+  })
+  it('waits for enough speech before deciding', () => {
+    expect(shouldFallBack('chrome-local', SILENT_ENGINE_MS - 1, 0)).toBe(false)
+  })
+  it('keeps an engine that has returned anything at all', () => {
+    expect(shouldFallBack('chrome-local', SILENT_ENGINE_MS * 5, 1)).toBe(false)
+  })
+  it('never falls back from Moonshine or the cloud engine', () => {
+    expect(shouldFallBack('moonshine', SILENT_ENGINE_MS * 5, 0)).toBe(false)
+    expect(shouldFallBack('cloud-web-speech', SILENT_ENGINE_MS * 5, 0)).toBe(false)
+  })
+})
