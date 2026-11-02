@@ -196,7 +196,7 @@ body { overflow: hidden; }
 .countdown { position: absolute; inset: 0; z-index: 6; display: grid; place-content: center; justify-items: center; gap: 18px; background: #0a0908cc; }
 .countdown-n { font-family: var(--serif); font-style: italic; font-variation-settings: 'opsz' 72; font-size: clamp(140px, 24vw, 300px); line-height: 1; color: var(--paper); animation: count 800ms var(--ease) both; }
 .countdown-hint { font-size: 13px; color: var(--stone); }
-@keyframes count { 0% { opacity: 0; transform: scale(1.18); filter: blur(8px); } 30% { opacity: 1; transform: scale(1); filter: blur(0); } 100% { opacity: 0.05; transform: scale(0.96); } }
+@keyframes count { 0% { opacity: 0; transform: scale(1.18); } 30% { opacity: 1; transform: scale(1); } 100% { opacity: 0.05; transform: scale(0.96); } }
 
 .hud {
   position: absolute; left: 50%; bottom: 22px; z-index: 7; transform: translateX(-50%);
