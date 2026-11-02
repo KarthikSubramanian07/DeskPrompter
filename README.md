@@ -33,9 +33,11 @@ Meet the lamp. Its light is the reading line. It nods when you finish a paragrap
 | 5 | **Glass-ready** | Horizontal and vertical mirroring for beam-splitter rigs, an adjustable reading line under the lens, a camera check for framing, and a *Talent window* that follows the operator on a second screen (no network needed). |
 | 6 | **Captions** | In voice mode every word you read is timed. Pause, then hit SRT or VTT in the controls and drop the file onto your edit timeline. |
 
-**Keys (on stage):** `space` play/pause · `↑` `↓` pace · `←` `→` line · `PgUp` `PgDn` paragraph (presentation clickers) · `m` mirror · `f` fullscreen · `+` `−` type size · `1` `2` `3` mode · `esc` back to the desk.
+**Keys (on stage):** `space` play/pause · `↑` `↓` pace · `←` `→` line · `PgUp` `PgDn` paragraph (presentation clickers) · `m` mirror · `f` fullscreen · `+` `−` type size · `1` `2` `3` mode · `?` all keys · `esc` back to the desk.
 
-**Script syntax:** a blank line starts a paragraph. `# Heading` marks a section. `[smile]` is a cue: it's shown on stage but never tracked.
+**Script syntax:** a blank line starts a paragraph. `# Heading` marks a section. `[smile]` is a cue: it's shown on stage but never tracked. You can also drop a `.txt` or `.md` file on the desk (or use the import button); Markdown headings become sections and formatting is stripped.
+
+**Speech engines:** voice mode picks Chrome's on-device recognizer when it's there, and otherwise Moonshine. If Chrome's engine hears you talk for six seconds without returning a word, the app switches to Moonshine by itself and remembers that for next time.
 
 ## Architecture
 

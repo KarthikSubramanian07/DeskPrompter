@@ -214,6 +214,8 @@
   .pipe-arrow { right: auto; left: 50%; top: auto; bottom: -12px; transform: translateX(-50%) rotate(135deg); }
 }
 @media (max-width: 760px) {
+  /* leave the bottom of the hero to the lamp so it never sits on the copy */
+  .hero { align-items: start; padding-top: 108px; padding-bottom: 250px; }
   .hero-copy { margin-left: 0; }
   .hero-note { display: none; }
   .nav nav a:not(.nav-cta) { display: none; }

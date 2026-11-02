@@ -285,3 +285,26 @@ body { overflow: hidden; }
 .display-wait-keys { font-size: 13px; margin-top: 14px !important; }
 .hud-text { height: 28px; padding: 0 8px; border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--paper-dim); }
 .hud-text:hover { color: var(--paper); background: #ffffff0a; }
+
+/* ───────────── import ───────────── */
+label.icon-btn { cursor: pointer; }
+.desk-center.is-dropping::after {
+  content: ''; position: absolute; inset: 14px; z-index: 5; pointer-events: none;
+  border: 1.5px dashed var(--clay); border-radius: 16px;
+  background: color-mix(in oklab, var(--clay) 6%, transparent);
+}
+.drop-hint {
+  position: absolute; left: 50%; top: 50%; z-index: 6; transform: translate(-50%, -50%); pointer-events: none;
+  padding: 10px 16px; border-radius: 999px; background: var(--surface-1); border: 1px solid var(--line);
+  font-size: 14px; color: var(--fg); box-shadow: 0 20px 40px -24px rgb(30 20 10 / 0.4);
+}
+
+/* ───────────── keys overlay ───────────── */
+.keys { position: absolute; inset: 0; z-index: 9; display: grid; place-items: center; background: #0a0908b8; backdrop-filter: blur(6px); animation: stage-in 220ms var(--ease) both; }
+.keys-card { width: min(520px, calc(100vw - 32px)); padding: 24px 26px 20px; border-radius: 16px; background: var(--surface-1); border: 1px solid #ffffff12; box-shadow: 0 30px 70px -30px #000; }
+.keys-title { margin: 0 0 14px; font-family: var(--display); font-size: 30px; line-height: 1; }
+.keys dl { margin: 0; display: grid; gap: 2px; }
+.keys dl > div { display: grid; grid-template-columns: 130px 1fr; align-items: center; gap: 14px; padding: 7px 0; border-top: 1px solid #ffffff0d; }
+.keys dt { display: flex; gap: 4px; }
+.keys dd { margin: 0; font-size: 14px; color: var(--paper-dim); }
+.keys-foot { margin: 14px 0 0; font-size: 12.5px; color: var(--stone); }

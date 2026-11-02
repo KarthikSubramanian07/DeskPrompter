@@ -206,8 +206,11 @@ function Remote({ code }: { code: string }) {
             <Icon name="minus" />
           </button>
           <output class="speed" aria-label="Speed">
-            <span class="remote__label">Speed</span>
-            <span class="speed__value">{snapshot && connected ? snapshot.speed.toFixed(1).replace(/\.0$/, '') : '–'}</span>
+            <span class="remote__label">{snapshot?.mode === 'voice' ? 'Your pace' : 'Pace'}</span>
+            <span class="speed__value">
+              {snapshot && connected && snapshot.wpm ? snapshot.wpm : '…'}
+              <span class="speed__unit">wpm</span>
+            </span>
           </output>
           <button class="btn btn--icon" type="button" disabled={!connected} onClick={() => cmd({ c: 'faster' })} aria-label="Faster">
             <Icon name="plus" />

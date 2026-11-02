@@ -39,6 +39,31 @@ export function settledCursor(r: AlignResult): number {
   return r.cursor
 }
 
+/** How long Chrome's engine may hear speech without returning a word before we give up on it. */
+export const SILENT_ENGINE_MS = 6000
+const SILENT_KEY = 'dp.chromeLocalSilent.v1'
+
+/** True when an engine has heard enough speech, returned nothing, and has a fallback to try. */
+export function shouldFallBack(id: SpeechEngineId, heardMs: number, results: number): boolean {
+  return id === 'chrome-local' && results === 0 && heardMs >= SILENT_ENGINE_MS
+}
+
+function chromeLocalKnownSilent(): boolean {
+  try {
+    return localStorage.getItem(SILENT_KEY) !== null
+  } catch {
+    return false
+  }
+}
+
+function rememberChromeLocalSilent() {
+  try {
+    localStorage.setItem(SILENT_KEY, String(Date.now()))
+  } catch {
+    /* private mode */
+  }
+}
+
 export class Listener {
   readonly level = signal<VoiceSample>({ level: 0, speaking: false })
   readonly state = signal<ListenState>('off')
@@ -56,6 +81,13 @@ export class Listener {
   private t0 = 0
   private mode: PrompterMode = 'manual'
   private run = 0
+  private engineId: SpeechEngineId | null = null
+  private engineOffs: (() => void)[] = []
+  private auto = false
+  private heardMs = 0
+  private results = 0
+  private switching = false
+  private hint: (cursor: number) => void = () => {}
 
   constructor(
     private readonly prompter: Prompter,
@@ -102,47 +134,13 @@ export class Listener {
     if (startAt >= 0) this.aligner.setCursor(startAt)
 
     const registry = await import('../speech/registry')
-    const { pickHintWords } = await import('../speech/hints')
+    this.auto = opts.engine === 'auto'
     let id: SpeechEngineId | null = opts.engine === 'auto' ? await registry.pickDefaultEngine({ allowCloud: opts.allowCloud }) : opts.engine
+    // Chrome's engine went quiet here before: go straight to the built-in model.
+    if (this.auto && id === 'chrome-local' && chromeLocalKnownSilent()) id = 'moonshine'
     if (run !== this.run) return
     if (!id) return this.fail('No on-device speech engine here. Breath mode works everywhere.')
-    try {
-      this.engine = await registry.createEngine(id)
-    } catch (e) {
-      return this.fail(`Couldn’t start speech recognition (${e instanceof Error ? e.message : e}).`)
-    }
-    if (run !== this.run) return void this.engine.stop()
 
-    const engine = this.engine
-    const hint = (cursor: number) => engine.setHints?.(pickHintWords(this.words(), cursor))
-    this.offs.push(
-      engine.on('state', ({ state, message }) => {
-        if (state === 'listening') {
-          this.state.value = 'listening'
-          this.status.value = ENGINE_LABEL[id!]
-        } else if (state === 'loading') {
-          this.state.value = 'starting'
-          this.status.value = message ?? 'Loading the speech model…'
-        } else if (state === 'error') this.fail(message ?? 'Speech recognition stopped.')
-      }),
-      engine.on('progress', ({ loaded, total }) => {
-        if (total > 0) this.status.value = `Downloading the speech model · ${Math.round((loaded / total) * 100)}%`
-      }),
-      engine.on('result', ({ text, isFinal }) => {
-        if (!this.aligner || !this.prompter.playing) return
-        const r = this.aligner.feed(text, isFinal)
-        this.track.value = r
-        if (!r.changed) return
-        const settled = settledCursor(r)
-        const before = this.stamps.at(-1)?.wi ?? -1
-        this.prompter.follow(settled, r.lead)
-        if (settled > before) {
-          this.stampUpTo(settled)
-          hint(settled)
-        }
-        this.prompter.voiceWpm = rollingWpm(this.stamps, performance.now() - this.t0)
-      }),
-    )
     // Hand-scrolls and taps resync the tracker.
     const prev = this.prompter.events.manualSeek
     this.prompter.events.manualSeek = (wi) => {
@@ -152,12 +150,89 @@ export class Listener {
     this.offs.push(() => (this.prompter.events.manualSeek = prev))
 
     this.t0 = performance.now()
-    hint(startAt)
+    await this.startEngine(id, run, startAt)
+  }
+
+  /** Create, wire and start one engine. Called again to fall back to another engine. */
+  private async startEngine(id: SpeechEngineId, run: number, startAt: number): Promise<void> {
+    const registry = await import('../speech/registry')
+    const { pickHintWords } = await import('../speech/hints')
+    let engine: SpeechEngine
+    try {
+      engine = await registry.createEngine(id)
+    } catch (e) {
+      if (this.auto && id === 'chrome-local') return this.fallBack(run, startAt, 'Chrome’s recognizer didn’t start')
+      return this.fail(`Couldn’t start speech recognition (${e instanceof Error ? e.message : e}).`)
+    }
+    if (run !== this.run) return void engine.stop()
+    this.engine = engine
+    this.engineId = id
+    this.heardMs = 0
+    this.results = 0
+
+    this.hint = (cursor: number) => engine.setHints?.(pickHintWords(this.words(), cursor))
+    this.engineOffs.push(
+      engine.on('state', ({ state, message }) => {
+        if (state === 'listening') {
+          this.state.value = 'listening'
+          this.status.value = ENGINE_LABEL[id]
+        } else if (state === 'loading') {
+          this.state.value = 'starting'
+          this.status.value = message ?? 'Loading the speech model…'
+        } else if (state === 'error') {
+          if (this.auto && id === 'chrome-local' && this.results === 0) void this.fallBack(run, this.lastCursor(), 'Chrome’s recognizer stopped')
+          else this.fail(message ?? 'Speech recognition stopped.')
+        }
+      }),
+      engine.on('progress', ({ loaded, total }) => {
+        if (total > 0) this.status.value = `Downloading the speech model · ${Math.round((loaded / total) * 100)}%`
+      }),
+      engine.on('result', ({ text, isFinal }) => {
+        this.results++
+        if (!this.aligner || !this.prompter.playing) return
+        const r = this.aligner.feed(text, isFinal)
+        this.track.value = r
+        if (!r.changed) return
+        const settled = settledCursor(r)
+        const before = this.stamps.at(-1)?.wi ?? -1
+        this.prompter.follow(settled, r.lead)
+        if (settled > before) {
+          this.stampUpTo(settled)
+          this.hint(settled)
+        }
+        this.prompter.voiceWpm = rollingWpm(this.stamps, performance.now() - this.t0)
+      }),
+    )
+
     try {
       await engine.start({ stream: this.stream!, lang: navigator.language || 'en-US', hints: pickHintWords(this.words(), startAt) })
     } catch (e) {
+      if (this.auto && id === 'chrome-local') return this.fallBack(run, startAt, 'Chrome’s recognizer didn’t start')
       this.fail(`Couldn’t start speech recognition (${e instanceof Error ? e.message : e}).`)
     }
+  }
+
+  private lastCursor(): number {
+    return this.stamps.at(-1)?.wi ?? Math.max(-1, this.prompter.wordAtLine() - 1)
+  }
+
+  /** Swap a silent or failed Chrome engine for the built-in Moonshine model, once. */
+  private async fallBack(run: number, startAt: number, why: string): Promise<void> {
+    if (this.switching || run !== this.run) return
+    this.switching = true
+    rememberChromeLocalSilent()
+    this.status.value = `${why}. Switching to the built-in speech model…`
+    await this.stopEngine()
+    if (run === this.run) await this.startEngine('moonshine', run, startAt)
+    this.switching = false
+  }
+
+  private async stopEngine() {
+    for (const off of this.engineOffs.splice(0)) off()
+    const engine = this.engine
+    this.engine = null
+    this.engineId = null
+    await engine?.stop().catch(() => {})
   }
 
   /** Words between the last stamp and `cursor` get evenly spaced times up to now. */
@@ -177,6 +252,11 @@ export class Listener {
       last = now
       const s = this.level.value
       this.prompter.speaking = s.speaking
+      // Watchdog: speech is going in, nothing is coming out.
+      if (this.mode === 'voice' && this.engineId && s.speaking && this.prompter.playing) {
+        this.heardMs += dt * 1000
+        if (this.auto && shouldFallBack(this.engineId, this.heardMs, this.results)) void this.fallBack(this.run, this.lastCursor(), 'Chrome’s recognizer isn’t returning words')
+      }
       if (this.mode === 'breath') this.prompter.breath = this.breath.update(s, dt)
       this.raf = requestAnimationFrame(tick)
     }
@@ -196,9 +276,8 @@ export class Listener {
   private async stopInner() {
     cancelAnimationFrame(this.raf)
     for (const off of this.offs.splice(0)) off()
-    const engine = this.engine
-    this.engine = null
-    await engine?.stop().catch(() => {})
+    await this.stopEngine()
+    this.switching = false
     this.gate?.stop()
     this.gate = null
     this.aligner?.dispose()
