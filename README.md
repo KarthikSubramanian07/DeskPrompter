@@ -26,12 +26,12 @@ Meet the lamp. Its light is the reading line. It nods when you finish a paragrap
 
 | | | |
 |---|---|---|
-| 1 | **Voice-follow** | Matches what you say against the script, word by word. Skips, stumbles, ad-libs and re-reads are handled. Recognition stays on-device: Chrome's local engine or Moonshine in WebAssembly. |
+| 1 | **Voice-follow** | Matches what you say against the script, word by word. Skips, stumbles, ad-libs and re-reads are handled. Recognition stays on-device: Chrome's local engine, or Moonshine (a ~51 MB streaming model, downloaded once and cached) running in a worker. |
 | 2 | **Breath mode** | No speech recognition at all. A tiny Zig voice detector scrolls while you talk and glides to a stop when you pause. |
 | 3 | **Steady mode** | The classic glide, calibrated in words per minute. Speed changes ease in instead of jumping. |
-| 4 | **Phone remote** | Scan a QR code and your phone is the clicker. Commands go peer to peer over WebRTC; the script stays on the laptop. |
-| 5 | **Glass-ready** | Horizontal and vertical mirroring for beam-splitter rigs, an adjustable reading line under the lens, and a talent window for a second screen. |
-| 6 | **Captions** | Every word you read is timed. Export SRT or VTT and drop it onto your edit timeline. |
+| 4 | **Phone remote** | Click *Pair a phone*, scan the QR code, and your phone is the clicker, with the current line, pace and time left. Commands go peer to peer over WebRTC. |
+| 5 | **Glass-ready** | Horizontal and vertical mirroring for beam-splitter rigs, an adjustable reading line under the lens, a camera check for framing, and a *Talent window* that follows the operator on a second screen (no network needed). |
+| 6 | **Captions** | In voice mode every word you read is timed. Pause, then hit SRT or VTT in the controls and drop the file onto your edit timeline. |
 
 **Keys (on stage):** `space` play/pause · `↑` `↓` pace · `←` `→` line · `PgUp` `PgDn` paragraph (presentation clickers) · `m` mirror · `f` fullscreen · `+` `−` type size · `1` `2` `3` mode · `esc` back to the desk.
 
@@ -57,7 +57,10 @@ Meet the lamp. Its light is the reading line. It nods when you finish a paragrap
 
 | Path | Language | What it does |
 |---|---|---|
-| `apps/web` | TypeScript · Preact · Vite | The PWA: landing page, studio, stage, remote. Bun workspace. |
+| `apps/web` | TypeScript · Preact · Vite | The PWA: landing page, studio, stage, phone remote, talent window. Bun workspace. |
+| `apps/web/src/core/listen.ts` | TypeScript | Wires mic → voice gate → speech engine → aligner → prompter, and stamps words for captions. |
+| `apps/web/src/speech` | TypeScript | Speech engines behind one interface: Chrome on-device (`processLocally`), Moonshine in a worker, and opt-in cloud Web Speech. Hints bias recognition toward the next rare words in your script. |
+| `apps/web/src/link` | TypeScript | Device links: BroadcastChannel for same-machine windows, WebRTC data channels with relay fallback for phones. |
 | `apps/web/src/core/prompter.ts` | TypeScript | The scroll engine. It measures word positions and moves the column under the reading line with critically damped springs. |
 | `apps/web/src/ui/lamp` | TypeScript · SVG | The lamp: two-link inverse kinematics, under-damped springs for follow-through, a pendulum paper tag. |
 | `crates/aligner` | Rust → WebAssembly | The script parser and the voice-follow tracker. Rarity-weighted local alignment over a window ahead of your place, phonetic keys for mishearings, and tiered commits so it never lurches. |
@@ -80,13 +83,16 @@ cargo test --workspace
 (cd zig/vad && zig build test)
 ```
 
-Pushes to `main` run CI (Rust, Zig, typecheck, tests, build) and deploy to Cloudflare Pages when `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are set as repository secrets.
+Every push and pull request runs CI: Rust tests, Zig tests, the wasm builds, typecheck, vitest and the production build. The site is deployed to Cloudflare Pages with `wrangler pages deploy apps/web/dist --project-name deskprompter`; CI also deploys automatically if `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are set as repository secrets.
+
+The site is served cross-origin isolated (`COOP: same-origin`, `COEP: require-corp`, see `apps/web/public/_headers`) because Moonshine's WebAssembly uses threads. Everything else it loads is same-origin.
 
 ## Privacy, plainly
 
 - Scripts are stored in IndexedDB on your device.
 - Voice-follow uses on-device recognition by default. Chrome's cloud recognizer is only available if you turn it on yourself, and the setting tells you where the audio goes.
-- The relay only ever sees pairing messages and, if WebRTC can't connect, the remote's button presses. Scripts never go through it.
+- The relay only ever sees pairing messages and, if WebRTC can't connect, the remote's button presses. When a phone is reached through the relay instead of directly, it gets timing and controls but never the script's words.
+- The talent window talks to the studio over a same-machine BroadcastChannel, never the network.
 
 ## Credits
 
