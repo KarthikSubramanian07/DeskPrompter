@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Privacy at DeskPrompter · DeskPrompter</title>
+    <meta name="description" content="Effective November 2, 2026." />
+    <meta name="theme-color" content="#F4F1E9" />
+    <link rel="canonical" href="https://deskprompter.pages.dev/privacy" />
+    <link rel="alternate" type="text/markdown" href="/privacy.md" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DeskPrompter" />
+    <meta property="og:title" content="Privacy at DeskPrompter" />
+    <meta property="og:description" content="Effective November 2, 2026." />
+    <meta property="og:url" content="https://deskprompter.pages.dev/privacy" />
+    <meta property="og:image" content="https://deskprompter.pages.dev/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="/src/styles/doc.css" />
+  </head>
+  <body class="doc day">
+    <header class="doc-nav">
+      <a class="doc-brand" href="/">DeskPrompter</a>
+      <nav aria-label="Site">
+          <a href="/about">About</a>
+          <a href="/contact">Contact</a>
+          <a href="/privacy" aria-current="page">Privacy</a>
+          <a class="doc-cta" href="/studio">Open the studio</a>
+      </nav>
+    </header>
+    <main class="doc-main">
+      <h1>Privacy at DeskPrompter</h1>
+      <p>Effective November 2, 2026.</p>
+      <p>DeskPrompter is built so that your scripts and your voice stay on your device. There are no accounts, no cookies, no advertising and no analytics. This page lists everything the app stores and every network connection it makes, so you can check for yourself.</p>
+      <h2>What stays on your device</h2>
+      <ul>
+      <li><strong>Scripts</strong> are saved in your browser&#39;s IndexedDB storage. They are never uploaded.</li>
+      <li><strong>Settings</strong> (mode, type size, mirroring and similar) are saved in your browser&#39;s localStorage.</li>
+      <li><strong>Microphone audio</strong> is processed inside the page. In voice mode, speech recognition runs on your device. In Breath mode, a voice detector only measures loudness and never transcribes.</li>
+      <li><strong>Camera video</strong> from the optional camera check is shown in the page and never recorded or sent anywhere.</li>
+      <li><strong>Offline copy</strong>: the app installs a service worker that stores its own files so it works without a connection.</li>
+      </ul>
+      <p>Clearing your browser&#39;s site data for deskprompter.pages.dev removes all of it.</p>
+      <h2>Network connections</h2>
+      <ul>
+      <li><strong>Hosting</strong>: the site is served by Cloudflare Pages. Like any website, Cloudflare receives your IP address and browser details when you load a page, under Cloudflare&#39;s privacy policy.</li>
+      <li><strong>Speech model download</strong>: the first time voice mode uses the Moonshine model, your browser downloads it from download.moonshine.ai. That server sees a normal download request (your IP address), never your audio. The model is then cached on your device.</li>
+      <li><strong>Chrome&#39;s on-device recognizer</strong>: if Chrome downloads its own language pack, that download is handled by Chrome and Google.</li>
+      <li><strong>Cloud recognition, only if you turn it on</strong>: the &quot;Allow cloud recognition&quot; setting is off by default. If you enable it, your browser&#39;s own speech service processes your audio (Google for Chrome, Apple for Safari) under their terms. The setting says so before you choose it.</li>
+      <li><strong>Phone remote, only when you pair</strong>: pairing uses a small relay on Cloudflare Workers. It sees a random room code, temporary device IDs and connection details such as IP addresses, and it helps your phone and laptop connect directly using STUN servers run by Cloudflare and Google. Script text is sent only over the direct connection. If a direct connection is impossible, the relay passes button presses and timing, never the words. Rooms are deleted after an hour of inactivity.</li>
+      </ul>
+      <h2>Children</h2>
+      <p>DeskPrompter does not collect personal information from anyone, including children.</p>
+      <h2>Changes and questions</h2>
+      <p>If this page changes, the effective date above will change and the history is public in the source repository: <a href="https://github.com/KarthikSubramanian07/DeskPrompter">https://github.com/KarthikSubramanian07/DeskPrompter</a>. Questions: <a href="https://deskprompter.pages.dev/contact">https://deskprompter.pages.dev/contact</a></p>
+    </main>
+    <footer class="doc-foot">
+      <span>DeskPrompter is free and open source under the MIT license.</span>
+      <a href="/llms.txt">For agents: llms.txt</a>
+    </footer>
+  </body>
+</html>

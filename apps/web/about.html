@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>About DeskPrompter · DeskPrompter</title>
+    <meta name="description" content="DeskPrompter is a free, open-source teleprompter that runs in the browser and follows your voice. It was built by Karthik Subramanian and is published..." />
+    <meta name="theme-color" content="#F4F1E9" />
+    <link rel="canonical" href="https://deskprompter.pages.dev/about" />
+    <link rel="alternate" type="text/markdown" href="/about.md" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DeskPrompter" />
+    <meta property="og:title" content="About DeskPrompter" />
+    <meta property="og:description" content="DeskPrompter is a free, open-source teleprompter that runs in the browser and follows your voice. It was built by Karthik Subramanian and is published..." />
+    <meta property="og:url" content="https://deskprompter.pages.dev/about" />
+    <meta property="og:image" content="https://deskprompter.pages.dev/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="/src/styles/doc.css" />
+  </head>
+  <body class="doc day">
+    <header class="doc-nav">
+      <a class="doc-brand" href="/">DeskPrompter</a>
+      <nav aria-label="Site">
+          <a href="/about" aria-current="page">About</a>
+          <a href="/contact">Contact</a>
+          <a href="/privacy">Privacy</a>
+          <a class="doc-cta" href="/studio">Open the studio</a>
+      </nav>
+    </header>
+    <main class="doc-main">
+      <h1>About DeskPrompter</h1>
+      <p>DeskPrompter is a free, open-source teleprompter that runs in the browser and follows your voice. It was built by Karthik Subramanian and is published under the MIT license, so anyone can use it, read the code, or run their own copy.</p>
+      <h2>Why it exists</h2>
+      <p>Good teleprompters usually keep their best feature, scrolling that follows your voice, behind a subscription, because the listening happens on someone else&#39;s server. DeskPrompter does the listening on your own device instead. That makes it free to run and private by default: your script and your voice never leave your computer, phone or tablet.</p>
+      <h2>How it works</h2>
+      <ul>
+      <li>A speech recognizer on your device turns what you say into words: Chrome&#39;s on-device recognizer when it is available, otherwise the open-source Moonshine model compiled to WebAssembly.</li>
+      <li>A matching engine written in Rust and compiled to WebAssembly compares those words with your script. It handles skipped lines, ad-libs, misheard words and repeated phrases without jumping around.</li>
+      <li>A voice detector written in Zig runs on the audio thread. It powers Breath mode, which scrolls while you talk and stops when you pause, with no transcription at all.</li>
+      <li>A small relay written in Rust on Cloudflare introduces your phone to your laptop for the phone remote. After that, they talk directly.</li>
+      </ul>
+      <h2>Who it is for</h2>
+      <p>Creators recording videos, teachers recording lessons, speakers rehearsing talks, people presenting on video calls, and anyone with a beam-splitter teleprompter rig who wants mirrored text and a separate talent screen.</p>
+      <h2>Project</h2>
+      <ul>
+      <li>Website: <a href="https://deskprompter.pages.dev">https://deskprompter.pages.dev</a></li>
+      <li>Source code: <a href="https://github.com/KarthikSubramanian07/DeskPrompter">https://github.com/KarthikSubramanian07/DeskPrompter</a></li>
+      <li>License: MIT</li>
+      <li>Contact: <a href="https://deskprompter.pages.dev/contact">https://deskprompter.pages.dev/contact</a></li>
+      </ul>
+    </main>
+    <footer class="doc-foot">
+      <span>DeskPrompter is free and open source under the MIT license.</span>
+      <a href="/llms.txt">For agents: llms.txt</a>
+    </footer>
+  </body>
+</html>
