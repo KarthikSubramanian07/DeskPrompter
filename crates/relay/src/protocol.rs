@@ -196,7 +196,9 @@ pub struct Peer {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Admission {
     /// Accept; the listed indices (into `existing`) must be closed as replaced.
-    Accept { replace: Vec<usize> },
+    Accept {
+        replace: Vec<usize>,
+    },
     Full,
 }
 
@@ -211,11 +213,7 @@ pub fn admit(existing: &[Peer], role: Role, id: &str) -> Admission {
         .map(|(i, _)| i)
         .collect();
     if role != Role::Host {
-        let guests = existing
-            .iter()
-            .enumerate()
-            .filter(|(i, p)| p.role != Role::Host && !replace.contains(i))
-            .count();
+        let guests = existing.iter().enumerate().filter(|(i, p)| p.role != Role::Host && !replace.contains(i)).count();
         if guests >= MAX_GUESTS {
             return Admission::Full;
         }
@@ -226,7 +224,9 @@ pub fn admit(existing: &[Peer], role: Role, id: &str) -> Admission {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FrameCheck {
     /// Forward it. `to` targets a single peer id; `None` broadcasts.
-    Relay { to: Option<String> },
+    Relay {
+        to: Option<String>,
+    },
     TooBig,
     Invalid,
 }
@@ -473,7 +473,9 @@ mod tests {
         let just_fits = format!(r#"{{"t":"x","p":"{}"}}"#, "x".repeat(MAX_FRAME_BYTES - 16));
         assert_eq!(just_fits.len(), MAX_FRAME_BYTES);
         assert_eq!(check_frame(&just_fits), FrameCheck::Relay { to: None });
-        for bad in ["", "hello", "[]", "{}", r#"{"t":3}"#, r#"{"t":""}"#, r#"{"t":"peer","event":"join"}"#, r#"{"t":"pong"}"#] {
+        for bad in
+            ["", "hello", "[]", "{}", r#"{"t":3}"#, r#"{"t":""}"#, r#"{"t":"peer","event":"join"}"#, r#"{"t":"pong"}"#]
+        {
             assert_eq!(check_frame(bad), FrameCheck::Invalid, "{bad:?}");
         }
     }

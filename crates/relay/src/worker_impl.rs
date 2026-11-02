@@ -147,7 +147,9 @@ impl DurableObject for Room {
         let Route::Room(request) = protocol::route("GET", url.path(), url.query()) else {
             return Response::error("bad request", 400);
         };
-        let id = request.id.unwrap_or_else(|| protocol::generate_peer_id(|| (js_sys::Math::random() * u32::MAX as f64) as u32));
+        let id = request
+            .id
+            .unwrap_or_else(|| protocol::generate_peer_id(|| (js_sys::Math::random() * u32::MAX as f64) as u32));
         let pair = WebSocketPair::new()?;
 
         let live = self.live();
@@ -176,7 +178,8 @@ impl DurableObject for Room {
             }
         }
 
-        let others: Vec<Peer> = peers.into_iter().enumerate().filter(|(i, _)| !replace.contains(i)).map(|(_, p)| p).collect();
+        let others: Vec<Peer> =
+            peers.into_iter().enumerate().filter(|(i, _)| !replace.contains(i)).map(|(_, p)| p).collect();
 
         self.state.accept_web_socket(&pair.server);
         pair.server.serialize_attachment(&Attachment { id: id.clone(), role: request.role, gone: false })?;
