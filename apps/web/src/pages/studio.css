@@ -284,3 +284,5 @@ body { overflow: hidden; }
 .display-wait p { margin: 0; }
 .display-wait-title { font-family: var(--serif); font-size: 32px; color: var(--fg); margin-bottom: 8px !important; }
 .display-wait-keys { font-size: 13px; margin-top: 14px !important; }
+.hud-text { height: 28px; padding: 0 8px; border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--paper-dim); }
+.hud-text:hover { color: var(--paper); background: #ffffff0a; }
