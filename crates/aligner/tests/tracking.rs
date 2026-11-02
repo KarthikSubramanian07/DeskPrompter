@@ -401,7 +401,7 @@ fn final_commits_lead_even_if_it_ends_off_script() {
 
 #[test]
 fn empty_and_cue_only_scripts_never_panic() {
-    for script in ["", "[pause]", "# Only a heading", "— … 🎬"] {
+    for script in ["", "[pause]", "# Only a heading", "\u{2014} … 🎬"] {
         let mut r = Rig::new(script);
         let res = r.say("hello there everyone");
         assert_eq!((res.cursor, res.lead), (-1, -1));

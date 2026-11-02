@@ -11,9 +11,9 @@ const built = existsSync(wasmPath)
 
 const CASES = [
   SAMPLE_SCRIPT,
-  '# Welcome\n\nGood evening, everyone — welcome to the 2026 showcase. [pause]\n\nThree ideas. 👩🏽‍💻 Let’s begin.',
+  '# Welcome\n\nGood evening, everyone \u2014 welcome to the 2026 showcase. [pause]\n\nThree ideas. 👩🏽‍💻 Let’s begin.',
   'one two\n# Mid heading\nthree four\n\n\n  five  [cue with spaces]six\n[broken\ncue] end',
-  'Smart “quotes” and don’t stop… café naïve — 北京 — ok',
+  'Smart “quotes” and don’t stop… café naïve \u2014 北京 \u2014 ok',
   '',
   '   \n\n  ',
 ]

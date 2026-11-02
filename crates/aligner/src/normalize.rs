@@ -448,7 +448,7 @@ mod tests {
 
     #[test]
     fn strips_punctuation_and_case() {
-        assert_eq!(u("“Hello,” she said—"), ["hello", "she", "said"]);
+        assert_eq!(u("“Hello,” she said\u{2014}"), ["hello", "she", "said"]);
         assert_eq!(u("Don’t STOP"), ["dont", "stop"]);
         assert_eq!(u("Café naïve Ångström"), ["cafe", "naive", "angstrom"]);
     }
@@ -456,7 +456,7 @@ mod tests {
     #[test]
     fn splits_dashes_and_slashes() {
         assert_eq!(
-            u("well-known and/or rock—paper"),
+            u("well-known and/or rock\u{2014}paper"),
             ["well", "known", "and", "or", "rock", "paper"]
         );
         assert_eq!(u("e-mail co-op"), ["email", "coop"]);
@@ -553,6 +553,6 @@ mod tests {
 
     #[test]
     fn emoji_and_bare_punctuation_vanish() {
-        assert!(u("🎬 — … !!").is_empty());
+        assert!(u("🎬 \u{2014} … !!").is_empty());
     }
 }

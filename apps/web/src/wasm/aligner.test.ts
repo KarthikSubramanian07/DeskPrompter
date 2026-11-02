@@ -13,7 +13,7 @@ if (!built) {
 
 const SCRIPT = `# Welcome
 
-Good evening, everyone — welcome to the 2026 showcase. [pause]
+Good evening, everyone \u2014 welcome to the 2026 showcase. [pause]
 
 Tonight I want to walk you through three ideas. 👩🏽‍💻 Let’s begin.`
 

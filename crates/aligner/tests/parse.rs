@@ -33,7 +33,7 @@ fn texts(p: &ParsedScript) -> Vec<(String, i32)> {
 
 #[test]
 fn utf16_offsets_survive_emoji_accents_cjk_and_typography() {
-    let script = "🎬 Ça va? “Smart quotes” and em—dashes… 北京故宫 👩🏽‍💻 naïve café\n\nZwölf Äpfel — 🚀🚀 fin.";
+    let script = "🎬 Ça va? “Smart quotes” and em\u{2014}dashes… 北京故宫 👩🏽‍💻 naïve café\n\nZwölf Äpfel \u{2014} 🚀🚀 fin.";
     let p = parse_script(script);
     check_offsets(script, &p);
     let t = texts(&p);
@@ -41,10 +41,10 @@ fn utf16_offsets_survive_emoji_accents_cjk_and_typography() {
     assert_eq!(t[0], ("🎬".into(), -1));
     assert_eq!(t[1], ("Ça".into(), 0));
     assert_eq!(t[3], ("“Smart".into(), 2));
-    assert!(t.iter().any(|(s, wi)| s == "em—dashes…" && *wi >= 0));
+    assert!(t.iter().any(|(s, wi)| s == "em\u{2014}dashes…" && *wi >= 0));
     assert!(t.iter().any(|(s, wi)| s == "北京故宫" && *wi >= 0));
     assert!(t.iter().any(|(s, wi)| s == "👩🏽‍💻" && *wi == -1));
-    assert!(t.iter().any(|(s, wi)| s == "—" && *wi == -1));
+    assert!(t.iter().any(|(s, wi)| s == "\u{2014}" && *wi == -1));
     assert_eq!(p.blocks.len(), 2);
     assert_eq!(
         p.word_count as usize,
@@ -177,10 +177,10 @@ fn cues_inside_headings_and_empty_input() {
 
 #[test]
 fn numbers_and_symbols_are_spoken_words() {
-    let p = parse_script("In 2026 we grew 50% — to $20M.");
+    let p = parse_script("In 2026 we grew 50% \u{2014} to $20M.");
     let t = texts(&p);
     assert_eq!(t.iter().filter(|x| x.1 >= 0).count(), 7, "{t:?}");
-    assert_eq!(t[5], ("—".into(), -1));
+    assert_eq!(t[5], ("\u{2014}".into(), -1));
 }
 
 #[test]

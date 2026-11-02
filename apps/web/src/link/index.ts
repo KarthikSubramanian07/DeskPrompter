@@ -1,8 +1,8 @@
 /**
  * Device link: pair a phone remote or a talent display with the prompter.
  *
- * - `createLocalLink` — same device, other windows (BroadcastChannel).
- * - `createRemoteLink` — other devices, WebRTC data channel with relay fallback.
+ * - `createLocalLink`: same device, other windows (BroadcastChannel).
+ * - `createRemoteLink`: other devices, WebRTC data channel with relay fallback.
  */
 
 export { createLocalLink } from './broadcast'

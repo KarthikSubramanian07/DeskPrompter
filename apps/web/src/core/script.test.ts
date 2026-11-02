@@ -3,7 +3,7 @@ import { parseScriptTS, spokenWords } from './script'
 
 const src = `# Act one
 
-Good evening. [pause] Welcome — to the 2026 show.
+Good evening. [pause] Welcome \u2014 to the 2026 show.
 Second line, same paragraph.
 
 Final 🎤 thought.`
@@ -15,7 +15,7 @@ describe('parseScriptTS rules shared with the Rust parser', () => {
     expect(p.wordCount).toBe(4)
   })
   it('gives bare punctuation and emoji no word index', () => {
-    const p = parseScriptTS('wait — 🎤 go')
+    const p = parseScriptTS('wait \u2014 🎤 go')
     expect(p.blocks[0]!.tokens.map((t) => t.wi)).toEqual([0, -1, -1, 1])
   })
   it('keeps an unclosed bracket inside its word, and cues stop at line breaks', () => {

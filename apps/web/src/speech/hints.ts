@@ -68,7 +68,7 @@ export interface HintOptions {
 export function cleanWord(raw: string): string {
   return raw
     .replace(/[‘’ʼ]/g, "'")
-    .replace(/[‐-—]/g, '-')
+    .replace(/[\u2010-\u2014]/g, '-')
     .replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '')
 }
 
