@@ -378,7 +378,7 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
 
   return (
     <div
-      class={`stage ${display ? 'is-display' : ''} ${hudVisible.value ? '' : 'hud-hidden'}`}
+      class={`stage night ${display ? 'is-display' : ''} ${hudVisible.value ? '' : 'hud-hidden'}`}
       style={{
         '--fs': `${s.fontSize}px`,
         '--lh': s.lineHeight,

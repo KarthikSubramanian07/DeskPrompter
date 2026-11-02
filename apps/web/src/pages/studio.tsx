@@ -34,9 +34,6 @@ function Studio() {
     if (script.value) bridge?.setScript(script.value.title, script.value.text)
   }, [script.value?.title, script.value?.text])
 
-  useEffect(() => {
-    document.documentElement.dataset.theme = settings.value.theme
-  }, [settings.value.theme])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -52,7 +49,7 @@ function Studio() {
   if (!ready.value || !script.value) return <div class="boot" />
 
   return (
-    <div class="studio grain">
+    <div class={`studio grain ${settings.value.theme === 'paper' ? 'day' : 'night'}`}>
       {view.value === 'desk' ? (
         <>
           <header class="bar">

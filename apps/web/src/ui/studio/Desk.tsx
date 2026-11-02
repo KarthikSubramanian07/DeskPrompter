@@ -191,7 +191,7 @@ function Setup() {
         <Toggle label="Countdown" hint="3, 2, 1 before you start" checked={s.countdown} onChange={(countdown) => patchSettings({ countdown })} />
         <Toggle label="Camera check" hint="See yourself under the lens" checked={s.camera} onChange={(camera) => patchSettings({ camera })} />
         <Toggle label="The lamp" hint="It nods along. It means well." checked={s.lamp} onChange={(lamp) => patchSettings({ lamp })} />
-        <Toggle label="Paper theme" checked={s.theme === 'paper'} onChange={(v) => patchSettings({ theme: v ? 'paper' : 'night' })} />
+        <Toggle label="Dark desk" hint="The stage is always dark" checked={s.theme === 'night'} onChange={(v) => patchSettings({ theme: v ? 'night' : 'paper' })} />
       </Section>
     </aside>
   )
@@ -243,6 +243,8 @@ export function Desk() {
       const page = el.querySelector('.page-text')!.getBoundingClientRect()
       const rest = { x: page.left - r.left + page.width * 0.5, y: page.top - r.top + Math.min(page.height, 420) * 0.4 }
       handle.rig.setMood(idle > 45 ? 'asleep' : idle > 6 ? 'idle' : 'watching')
+      // In daylight the beam is invisible anyway; the lamp just keeps you company.
+      handle.beamStrength = settings.value.theme === 'paper' ? 0 : 0.55
       const want = idle < 6 && gaze ? gaze : rest
       const k = 1 - Math.exp(-dt * 5)
       pool.x += (want.x - pool.x) * k
