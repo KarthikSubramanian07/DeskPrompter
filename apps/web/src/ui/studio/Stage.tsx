@@ -9,6 +9,7 @@ import { Prompter, speedToWpm } from '../../core/prompter'
 import { patchSettings, settings, type Script } from '../../core/store'
 import { estimateRemainingMs, formatClock } from '../../core/timing'
 import { createLampHandle, Lamp } from '../lamp/Lamp'
+import { CameraCheck } from './CameraCheck'
 import { Kbd } from './controls'
 
 export interface StageApi {
@@ -286,6 +287,8 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display 
         </div>
         {s.lamp && <Lamp handle={handle} class="stage-lamp" />}
       </div>
+
+      {s.camera && !display && <CameraCheck />}
 
       {countdown.value !== null && (
         <div class="countdown" role="status" aria-live="assertive">

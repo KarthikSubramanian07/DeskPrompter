@@ -234,5 +234,20 @@ body { overflow: hidden; }
 .hud-icon:hover { color: var(--washi); background: #ffffff0a; }
 .hud-icon.on { color: var(--shu); }
 .stage-status { position: absolute; top: 14px; right: 18px; z-index: 7; }
-.stage-hint { position: absolute; left: 50%; bottom: 84px; transform: translateX(-50%); z-index: 7; display: flex; gap: 6px; align-items: center; white-space: nowrap; animation: stage-in 600ms 300ms var(--ease) both; }
+.stage-hint { position: absolute; left: 50%; bottom: 84px; transform: translateX(-50%); z-index: 7; display: flex; gap: 6px; align-items: center; white-space: nowrap; padding: 6px 12px; border-radius: 999px; background: #0a0908cc; backdrop-filter: blur(8px); animation: stage-in 600ms 300ms var(--ease) both; }
 .hud-hidden .stage-hint, .hud-hidden .stage-status { opacity: 0; }
+
+/* ───────────── camera check ───────────── */
+.cam {
+  position: absolute; top: 12px; left: 50%; z-index: 6; margin: 0;
+  width: 168px; aspect-ratio: 16 / 9; transform: translateX(-50%);
+  border-radius: 12px; overflow: hidden;
+  background: #1c1a17; border: 1px solid #ffffff1a;
+  box-shadow: 0 14px 40px -18px #000;
+  transition: opacity 420ms var(--ease), width 320ms var(--ease);
+}
+.cam video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: block; }
+.cam figcaption { position: absolute; inset: 0; display: grid; place-items: center; }
+.cam-dot { position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--shu); }
+.cam:hover { width: 280px; }
+.hud-hidden .cam { opacity: 0.55; }
