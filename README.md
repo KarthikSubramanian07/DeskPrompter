@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="apps/web/public/icon-192.png" width="72" alt="DeskPrompter seal" />
+<img src="apps/web/public/icon-192.png" width="72" alt="DeskPrompter lamp logo" />
 
 # DeskPrompter
 
@@ -10,7 +10,7 @@
 
 `teleprompter` · `voice-follow` · `offline-first` · `pwa` · `rust` · `webassembly` · `zig` · `webrtc` · `cloudflare` · `privacy`
 
-<img src="apps/web/public/og.png" alt="DeskPrompter landing page: a vermilion desk lamp lighting the words 'Say it like you mean it.'" width="760" />
+<img src="apps/web/public/og.png" alt="DeskPrompter landing page: a desk lamp lighting the words 'Say it like you mean it.'" width="760" />
 
 </div>
 
@@ -20,18 +20,18 @@
 
 Good teleprompters keep their best trick, scrolling that follows your voice, behind a subscription because the listening usually happens on someone else's server. DeskPrompter does the listening on your machine and the matching in WebAssembly, so there's nothing to pay for and nothing to leak. Scripts live in your browser's storage. There are no accounts and no analytics.
 
-Meet **Andon** (行灯), the lamp. Its light is the reading line. It nods when you finish a paragraph, leans in while you talk, droops when you pause, and nods off if you leave it alone long enough.
+Meet the lamp. Its light is the reading line. It nods when you finish a paragraph, leans in while you talk, droops when you pause, and dozes off if you leave it alone long enough. It also wears a little paper tag that says hi.
 
-## What's on the menu
+## What it does
 
 | | | |
 |---|---|---|
-| 一 | **Voice-follow** | Matches what you say against the script, word by word. Skips, stumbles, ad-libs and re-reads are handled. Recognition stays on-device: Chrome's local engine or Moonshine in WebAssembly. |
-| 二 | **Breath mode** | No speech recognition at all. A tiny Zig voice detector scrolls while you talk and glides to a stop when you pause. |
-| 三 | **Steady mode** | The classic glide, calibrated in words per minute. Speed changes ease in instead of jumping. |
-| 四 | **Phone remote** | Scan a QR code and your phone is the clicker. Commands go peer to peer over WebRTC; the script stays on the laptop. |
-| 五 | **Glass-ready** | Horizontal and vertical mirroring for beam-splitter rigs, an adjustable reading line under the lens, and a talent window for a second screen. |
-| 六 | **Captions** | Every word you read is timed. Export SRT or VTT and drop it onto your edit timeline. |
+| 1 | **Voice-follow** | Matches what you say against the script, word by word. Skips, stumbles, ad-libs and re-reads are handled. Recognition stays on-device: Chrome's local engine or Moonshine in WebAssembly. |
+| 2 | **Breath mode** | No speech recognition at all. A tiny Zig voice detector scrolls while you talk and glides to a stop when you pause. |
+| 3 | **Steady mode** | The classic glide, calibrated in words per minute. Speed changes ease in instead of jumping. |
+| 4 | **Phone remote** | Scan a QR code and your phone is the clicker. Commands go peer to peer over WebRTC; the script stays on the laptop. |
+| 5 | **Glass-ready** | Horizontal and vertical mirroring for beam-splitter rigs, an adjustable reading line under the lens, and a talent window for a second screen. |
+| 6 | **Captions** | Every word you read is timed. Export SRT or VTT and drop it onto your edit timeline. |
 
 **Keys (on stage):** `space` play/pause · `↑` `↓` pace · `←` `→` line · `PgUp` `PgDn` paragraph (presentation clickers) · `m` mirror · `f` fullscreen · `+` `−` type size · `1` `2` `3` mode · `esc` back to the desk.
 
@@ -59,7 +59,7 @@ Meet **Andon** (行灯), the lamp. Its light is the reading line. It nods when y
 |---|---|---|
 | `apps/web` | TypeScript · Preact · Vite | The PWA: landing page, studio, stage, remote. Bun workspace. |
 | `apps/web/src/core/prompter.ts` | TypeScript | The scroll engine. It measures word positions and moves the column under the reading line with critically damped springs. |
-| `apps/web/src/ui/lamp` | TypeScript · SVG | Andon: two-link inverse kinematics, under-damped springs for follow-through, a pendulum paper tag. |
+| `apps/web/src/ui/lamp` | TypeScript · SVG | The lamp: two-link inverse kinematics, under-damped springs for follow-through, a pendulum paper tag. |
 | `crates/aligner` | Rust → WebAssembly | The script parser and the voice-follow tracker. Rarity-weighted local alignment over a window ahead of your place, phonetic keys for mishearings, and tiered commits so it never lurches. |
 | `zig/vad` | Zig → WebAssembly | Voice activity detection in an AudioWorklet: high-pass filter, adaptive noise floor, hysteresis. No allocator, a few KB. |
 | `crates/relay` | Rust → Cloudflare Workers | A Durable Object that introduces your phone to your laptop (WebRTC signaling) and relays only if peer-to-peer fails. |
@@ -90,6 +90,6 @@ Pushes to `main` run CI (Rust, Zig, typecheck, tests, build) and deploy to Cloud
 
 ## Credits
 
-Voice-follow ideas were borrowed (not code) from [linefeed](https://github.com/NxTsh/linefeed), [Suflyor](https://github.com/olerast67/voice-teleprompter-android), [Textream](https://github.com/f/textream) and [promptme-ai](https://github.com/larsbaunwall/promptme-ai). Type is set in Newsreader, Geist and Shippori Mincho (all under the SIL Open Font License).
+Voice-follow ideas were borrowed (not code) from [linefeed](https://github.com/NxTsh/linefeed), [Suflyor](https://github.com/olerast67/voice-teleprompter-android), [Textream](https://github.com/f/textream) and [promptme-ai](https://github.com/larsbaunwall/promptme-ai). Type is set in Newsreader, Hanken Grotesk and Caveat (all under the SIL Open Font License).
 
-MIT © Karthik Subramanian. Made late at night. 乾杯.
+MIT © Karthik Subramanian. Made late at night.
