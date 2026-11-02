@@ -381,3 +381,10 @@ label.icon-btn { cursor: pointer; }
 .guide strong { color: var(--fg); font-weight: 600; }
 .guide-close { margin-top: 12px; height: 30px; padding: 0 14px; border-radius: 999px; background: var(--fg); color: var(--bg); font-size: 13px; font-weight: 600; }
 .pair-steps { margin: -6px 0 14px; font-size: 13.5px; line-height: 1.5; color: var(--paper-dim); }
+
+.save-error { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 20px; background: var(--surface); color: var(--fg); border-bottom: 1px solid var(--clay); font-size: 14px; }
+.save-error button { padding: 8px 12px; border: 1px solid var(--clay); border-radius: 6px; color: var(--fg); }
+
+.script-download { align-self: flex-start; color: var(--clay); padding: 8px 0; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+
+.btn-go:disabled { opacity: 0.45; cursor: not-allowed; }

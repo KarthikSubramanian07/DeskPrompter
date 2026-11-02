@@ -1,3 +1,4 @@
+import { downloadScript } from '../../core/downloadScript'
 /**
  * The writing desk: scripts on the left, the page in the middle, the setup on
  * the right, and the lamp keeping you company in the corner.
@@ -104,7 +105,7 @@ function Rail() {
           </li>
         ))}
       </ul>
-      <p class="rail-foot">Saved in this browser. Never uploaded.</p>
+      <p class="rail-foot">Scripts stay in this browser. Download a copy to keep a backup.</p>
     </aside>
   )
 }
@@ -145,6 +146,7 @@ function Page({ script }: { script: Script }) {
         aria-label="Script title"
         onInput={(e) => updateScript(script.id, { title: (e.target as HTMLInputElement).value })}
       />
+      <button class="script-download" onClick={() => downloadScript(script)}>Download script</button>
       <p class="page-meta">
         <span>{stats.words.toLocaleString()} words</span>
         <span>·</span>

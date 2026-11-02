@@ -69,6 +69,7 @@ export const settings = signal<Settings>(loadSettings())
 export const scripts = signal<Script[]>([])
 export const currentId = signal<string>('')
 export const ready = signal(false)
+export const saveStatus = signal<'saved' | 'saving' | 'error'>('saved')
 
 export function patchSettings(p: Partial<Settings>) {
   settings.value = { ...settings.value, ...p }
@@ -93,16 +94,44 @@ export function currentScript(): Script | undefined {
 }
 
 let saveTimer: ReturnType<typeof setTimeout> | undefined
-function persist() {
+let revision = 0
+let saveQueue: Promise<void> = Promise.resolve()
+
+/** Serialize writes so an older snapshot cannot overwrite a newer edit. */
+export function saveNow(): Promise<void> {
   clearTimeout(saveTimer)
-  saveTimer = setTimeout(() => {
-    void set(SCRIPTS_KEY, scripts.value)
+  const version = revision
+  const snapshot = scripts.value
+  const selected = currentId.value
+  saveStatus.value = 'saving'
+  saveQueue = saveQueue.then(async () => {
     try {
-      localStorage.setItem(CURRENT_KEY, currentId.value)
+      await set(SCRIPTS_KEY, snapshot)
+      try {
+        localStorage.setItem(CURRENT_KEY, selected)
+      } catch {
+        // Selection is optional; script content was saved successfully.
+      }
+      if (version === revision) saveStatus.value = 'saved'
     } catch {
-      /* ignore */
+      if (version === revision) saveStatus.value = 'error'
     }
-  }, 250)
+  })
+  return saveQueue
+}
+
+function persist() {
+  revision++
+  saveStatus.value = 'saving'
+  clearTimeout(saveTimer)
+  saveTimer = setTimeout(() => void saveNow(), 250)
+}
+
+// Start pending writes when the user leaves the tab instead of waiting for the debounce.
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden' && saveStatus.value === 'saving') void saveNow()
+  })
 }
 
 export function updateScript(id: string, p: Partial<Pick<Script, 'title' | 'text'>>) {
@@ -135,6 +164,7 @@ export async function hydrate() {
     list = await get<Script[]>(SCRIPTS_KEY)
   } catch {
     list = undefined
+    saveStatus.value = 'error'
   }
   if (!list || list.length === 0) list = [{ id: uid(), title: SAMPLE_TITLE, text: SAMPLE_SCRIPT, updatedAt: Date.now() }]
   scripts.value = list
