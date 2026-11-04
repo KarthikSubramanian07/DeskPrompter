@@ -277,6 +277,7 @@ function Landing() {
               <a href="/contact">Contact</a>
               <a href="/privacy">Privacy</a>
               <a href="https://github.com/KarthikSubramanian07/DeskPrompter">Source code</a>
+              <a href="https://buymeacoffee.com/winnerkarthik">Buy me a coffee</a>
             </nav>
             <span class="foot-note">Free and open source.</span>
           </footer>

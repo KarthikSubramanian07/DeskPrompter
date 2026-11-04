@@ -8,6 +8,8 @@
 
 [**deskprompter.pages.dev**](https://deskprompter.pages.dev) · [Open the studio](https://deskprompter.pages.dev/studio)
 
+[![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-ffdd00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/winnerkarthik)
+
 `teleprompter` · `voice-follow` · `offline-first` · `pwa` · `rust` · `webassembly` · `zig` · `webrtc` · `cloudflare` · `privacy`
 
 <img src="apps/web/public/og.png" alt="DeskPrompter landing page: a desk lamp lighting the words 'Say it like you mean it.'" width="760" />
@@ -111,6 +113,10 @@ How it's built: `apps/web/worker/` is a Cloudflare Pages advanced-mode worker (`
 - Voice-follow uses on-device recognition by default. Chrome's cloud recognizer is only available if you turn it on yourself, and the setting tells you where the audio goes.
 - The relay only ever sees pairing messages and, if WebRTC can't connect, the remote's button presses. When a phone is reached through the relay instead of directly, it gets timing and controls but never the script's words.
 - The talent window talks to the studio over a same-machine BroadcastChannel, never the network.
+
+## Support
+
+DeskPrompter is free, with no account and no ads. If it got you through a take, you can [buy me a coffee](https://buymeacoffee.com/winnerkarthik).
 
 ## Credits
 
