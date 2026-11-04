@@ -163,6 +163,7 @@
 .foot-links { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; }
 .foot-links a { color: var(--paper-dim); text-decoration: none; }
 .foot-links a:hover { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 640px) { .foot { flex-wrap: wrap; } .foot-links { order: 3; flex-basis: 100%; row-gap: 12px; } }
 
 @media (max-width: 900px) {
   .mode-grid { grid-template-columns: 1fr; }
