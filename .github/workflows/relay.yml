@@ -24,17 +24,22 @@ env:
   CARGO_TERM_COLOR: always
   RELAY_URL: https://deskprompter-relay.karthik-e5e.workers.dev
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Test relay
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
           targets: wasm32-unknown-unknown
           components: clippy, rustfmt
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
       - name: Format
         run: cargo fmt -p relay --check
       - name: Unit tests (host target)
@@ -54,15 +59,17 @@ jobs:
       - name: Skip without credentials
         if: env.CLOUDFLARE_API_TOKEN == ''
         run: echo "::notice::CLOUDFLARE_API_TOKEN is not set; skipping the relay deploy."
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         if: env.CLOUDFLARE_API_TOKEN != ''
-      - uses: dtolnay/rust-toolchain@stable
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         if: env.CLOUDFLARE_API_TOKEN != ''
         with:
           targets: wasm32-unknown-unknown
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
         if: env.CLOUDFLARE_API_TOKEN != ''
-      - uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         if: env.CLOUDFLARE_API_TOKEN != ''
       - name: Deploy with wrangler
         if: env.CLOUDFLARE_API_TOKEN != ''
