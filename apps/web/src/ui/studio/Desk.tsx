@@ -38,11 +38,13 @@ function ago(t: number): string {
 /** On small screens the rail and the setup panel slide up as sheets. */
 export const deskSheet = signal<'none' | 'scripts' | 'setup'>('none')
 
-function SheetHead({ title }: { title: string }) {
+function SheetHead({ title, id }: { title: string; id: string }) {
   return (
     <div class="sheet-head">
       <span class="sheet-grip" aria-hidden="true" />
-      <span class="sheet-title">{title}</span>
+      <h2 class="sheet-title" id={id}>
+        {title}
+      </h2>
       <button class="sheet-done" onClick={() => (deskSheet.value = 'none')}>
         Done
       </button>
@@ -50,19 +52,28 @@ function SheetHead({ title }: { title: string }) {
   )
 }
 
+/** Open sheets behave as modal dialogs; closed ones are plain side panels. */
+function sheetProps(name: 'scripts' | 'setup', label: string) {
+  const open = deskSheet.value === name
+  return open
+    ? ({ role: 'dialog', 'aria-modal': true, 'aria-labelledby': `sheet-${name}` } as const)
+    : ({ role: 'complementary', 'aria-label': label } as const)
+}
+
 function Rail() {
   return (
-    <aside class={`rail ${deskSheet.value === 'scripts' ? 'is-open' : ''}`}>
-      <SheetHead title="Scripts" />
+    <section class={`rail ${deskSheet.value === 'scripts' ? 'is-open' : ''}`} {...sheetProps('scripts', 'Scripts')}>
+      <SheetHead title="Scripts" id="sheet-scripts" />
       <div class="rail-head">
-        <span class="rail-heading">Scripts</span>
-        <label class="icon-btn" title="Import a .txt or .md file" aria-label="Import a script file">
+        <h2 class="rail-heading">Scripts</h2>
+        <label class="icon-btn" title="Import a .txt or .md file">
           <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
             <path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
           <input
             type="file"
             accept={IMPORT_ACCEPT}
+            aria-label="Import a script file"
             class="sr-only"
             onChange={async (e) => {
               const input = e.target as HTMLInputElement
@@ -83,6 +94,7 @@ function Rail() {
           <li key={s.id}>
             <button
               class={`rail-item ${s.id === currentId.value ? 'on' : ''}`}
+              aria-current={s.id === currentId.value ? 'true' : undefined}
               onClick={() => {
                 selectScript(s.id)
                 deskSheet.value = 'none'
@@ -95,7 +107,7 @@ function Rail() {
             {scripts.value.length > 1 && (
               <button
                 class="rail-del"
-                aria-label={`Delete ${s.title}`}
+                aria-label={`Delete ${s.title || 'Untitled'}`}
                 title="Delete"
                 onClick={() => confirm(`Delete “${s.title || 'Untitled'}”? This can't be undone.`) && deleteScript(s.id)}
               >
@@ -106,7 +118,7 @@ function Rail() {
         ))}
       </ul>
       <p class="rail-foot">Scripts stay in this browser. Download a copy to keep a backup.</p>
-    </aside>
+    </section>
   )
 }
 
@@ -122,7 +134,7 @@ function Page({ script }: { script: Script }) {
   return (
     <div class="page">
       {!guideDone.value && (
-        <aside class="guide" aria-label="How to start">
+        <section class="guide" aria-label="How to start">
           <ol>
             <li>
               <strong>Add your script.</strong> Type or paste it below, or drop in a text file.
@@ -137,7 +149,7 @@ function Page({ script }: { script: Script }) {
           <button class="guide-close" onClick={dismissGuide}>
             Got it
           </button>
-        </aside>
+        </section>
       )}
       <input
         class="page-title"
@@ -195,8 +207,8 @@ function Page({ script }: { script: Script }) {
 function Setup() {
   const s = settings.value
   return (
-    <aside class={`setup ${deskSheet.value === 'setup' ? 'is-open' : ''}`}>
-      <SheetHead title="Settings" />
+    <section class={`setup ${deskSheet.value === 'setup' ? 'is-open' : ''}`} {...sheetProps('setup', 'Settings')}>
+      <SheetHead title="Settings" id="sheet-setup" />
       <Section label="Scrolling">
         <Segmented
           label="Scroll mode"
@@ -254,7 +266,7 @@ function Setup() {
         <Toggle label="Show the lamp" hint="Lights up the line you're on" checked={s.lamp} onChange={(lamp) => patchSettings({ lamp })} />
         <Toggle label="Dark editor" hint="The reading screen is always dark" checked={s.theme === 'night'} onChange={(v) => patchSettings({ theme: v ? 'night' : 'paper' })} />
       </Section>
-    </aside>
+    </section>
   )
 }
 
@@ -263,6 +275,28 @@ export function Desk() {
   const wrap = useRef<HTMLDivElement>(null)
   const handle = useRef(createLampHandle({ beamStrength: 0.55 })).current
   const dragging = useSignal(false)
+  const opener = useRef<HTMLElement | null>(null)
+
+  // An open sheet is modal: focus moves into it, the rest of the page is inert, Escape closes
+  // it, and focus returns to the button that opened it.
+  useEffect(() => {
+    const name = deskSheet.value
+    if (name === 'none') return
+    opener.current = document.activeElement as HTMLElement | null
+    const sheet = document.querySelector<HTMLElement>(name === 'scripts' ? '.rail' : '.setup')
+    const others = [...document.querySelectorAll<HTMLElement>('.studio > .skip-link, .studio > .bar, .studio > .save-error, .desk-center, .rail, .setup')].filter((el) => el !== sheet)
+    others.forEach((el) => (el.inert = true))
+    sheet?.querySelector<HTMLElement>('.sheet-done')?.focus()
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') deskSheet.value = 'none'
+    }
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      others.forEach((el) => (el.inert = false))
+      if (opener.current?.isConnected) opener.current.focus()
+    }
+  }, [deskSheet.value])
 
   useEffect(() => {
     const el = wrap.current!
@@ -328,7 +362,8 @@ export function Desk() {
     <div class="desk">
       {deskSheet.value !== 'none' && <div class="sheet-scrim" onClick={() => (deskSheet.value = 'none')} />}
       <Rail />
-      <div
+      <main
+        id="desk"
         class={`desk-center ${dragging.value ? 'is-dropping' : ''}`}
         ref={wrap}
         onDragOver={(e) => {
@@ -351,7 +386,7 @@ export function Desk() {
         {dragging.value && <div class="drop-hint">Drop a .txt or .md file to add it as a new script</div>}
         {script.value && <Page script={script.value} />}
         {settings.value.lamp && <Lamp handle={handle} class="desk-lamp" />}
-      </div>
+      </main>
       <Setup />
     </div>
   )

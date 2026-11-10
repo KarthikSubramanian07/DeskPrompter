@@ -20,6 +20,7 @@ const STATUS: Record<string, string> = {
 export function PairButton({ bridge }: { bridge: HostBridge }) {
   const [open, setOpen] = useState(false)
   const box = useRef<HTMLDivElement>(null)
+  const trigger = useRef<HTMLButtonElement>(null)
   const phones = bridge.peers.value.filter((p) => p.role === 'remote').length
   const connected = phones > 0
 
@@ -28,7 +29,11 @@ export function PairButton({ bridge }: { bridge: HostBridge }) {
     const onDoc = (e: PointerEvent) => {
       if (!box.current?.contains(e.target as Node)) setOpen(false)
     }
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      setOpen(false)
+      trigger.current?.focus()
+    }
     document.addEventListener('pointerdown', onDoc)
     document.addEventListener('keydown', onKey)
     return () => {
@@ -39,13 +44,19 @@ export function PairButton({ bridge }: { bridge: HostBridge }) {
 
   return (
     <div class="pair" ref={box}>
-      <button class={`bar-btn ${connected ? 'on' : ''}`} onClick={() => setOpen(!open)} aria-expanded={open}>
+      <button
+        ref={trigger}
+        class={`bar-btn ${connected ? 'on' : ''}`}
+        onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        aria-controls={open ? 'pair-panel' : undefined}
+      >
         <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
           <rect x="4" y="1.5" width="8" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.4" />
           <path d="M7 12.2h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
         </svg>
         {connected ? `Phone connected` : 'Phone remote'}
-        {connected && <span class="pair-dot" />}
+        {connected && <span class="pair-dot" aria-hidden="true" />}
       </button>
       {open && <PairPanel bridge={bridge} />}
     </div>
@@ -59,16 +70,18 @@ function PairPanel({ bridge }: { bridge: HostBridge }) {
   const phones = bridge.peers.value.filter((p) => p.role === 'remote')
   const label = phones.length ? (phones.some((p) => p.via === 'p2p') ? STATUS.p2p : STATUS.relay) : (STATUS[status] ?? status)
   return (
-    <div class="pair-panel" role="dialog" aria-label="Phone remote">
-      <p class="pair-title">Control it from your phone</p>
+    <div class="pair-panel" id="pair-panel" role="region" aria-labelledby="pair-title">
+      <h2 class="pair-title" id="pair-title">
+        Control it from your phone
+      </h2>
       <p class="pair-steps">Open your phone's camera and point it at this code. Then use your phone to start, pause and change speed.</p>
-      <div class="pair-qr" dangerouslySetInnerHTML={{ __html: svg }} />
+      <div class="pair-qr" role="img" aria-label="QR code that opens the phone remote" dangerouslySetInnerHTML={{ __html: svg }} />
       <p class="pair-code">
         No camera? Go to <a href={url} target="_blank" rel="noreferrer">{location.host}/remote</a> and enter{' '}
         <strong>{bridge.code.value ? formatRoomCode(bridge.code.value) : '…'}</strong>
       </p>
-      <p class={`pair-status ${phones.length ? 'ok' : ''}`}>
-        <span class="pair-status-dot" />
+      <p class={`pair-status ${phones.length ? 'ok' : ''}`} role="status">
+        <span class="pair-status-dot" aria-hidden="true" />
         {label}
       </p>
       <p class="pair-fine">Your script stays on this computer. The phone only sends button presses.</p>
@@ -82,7 +95,7 @@ export function TalentButton() {
     w?.focus()
   }
   return (
-    <button class="bar-btn" onClick={open} title="Open the script in a new window you can drag to another screen or a teleprompter monitor">
+    <button class="bar-btn bar-talent" onClick={open} title="Open the script in a new window you can drag to another screen or a teleprompter monitor">
       <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
         <rect x="1.5" y="2.5" width="13" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4" />
         <path d="M5.5 14h5M8 11.5V14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />

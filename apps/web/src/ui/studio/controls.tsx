@@ -33,6 +33,7 @@ export function Slider(props: {
         max={max}
         step={step}
         value={value}
+        aria-valuetext={format(value)}
         style={{ '--pct': `${pct}%` }}
         onInput={(e) => onInput(Number((e.target as HTMLInputElement).value))}
       />

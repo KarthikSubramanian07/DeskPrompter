@@ -43,11 +43,11 @@ export function Display({ mirrorX }: { mirrorX: boolean }) {
 
   if (!script.value)
     return (
-      <div class="display-wait">
-        <p class="display-wait-title">Talent window</p>
-        <p>Waiting for the studio. Keep DeskPrompter open in another window on this computer.</p>
+      <main class="display-wait">
+        <h1 class="display-wait-title">Talent window</h1>
+        <p role="status">Waiting for the studio. Keep DeskPrompter open in another window on this computer.</p>
         <p class="display-wait-keys">Press F for fullscreen, M to mirror.</p>
-      </div>
+      </main>
     )
 
   return (
