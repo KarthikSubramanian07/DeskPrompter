@@ -4,6 +4,7 @@
  * waveform show what voice-follow does without asking for a microphone.
  */
 import { useEffect, useRef, useState } from 'preact/hooks'
+import { MotionToggle, motionPaused } from './motion'
 
 const SENTENCES = [
   'Good evening, and thanks for sticking around.',
@@ -52,6 +53,11 @@ export function Demo() {
 
     const step = () => {
       if (!visible) return
+      // Paused: hold the current frame and check back shortly.
+      if (motionPaused.value) {
+        timer = setTimeout(step, 250)
+        return
+      }
       const b = beats[i++ % beats.length]!
       if ('reset' in b) {
         setWi(-1)
@@ -78,6 +84,10 @@ export function Demo() {
     const seed = Array.from({ length: BARS }, (_, k) => 0.5 + 0.5 * Math.sin(k * 1.7))
     const wave = (t: number) => {
       if (!visible) return
+      if (motionPaused.value) {
+        raf = requestAnimationFrame(wave)
+        return
+      }
       for (let k = 0; k < BARS; k++) {
         const el = bars.current[k]
         if (!el) continue
@@ -110,7 +120,7 @@ export function Demo() {
   const sentence = wi < 0 ? 0 : START.findLastIndex((s) => s <= wi)
 
   return (
-    <div class="demo" ref={root}>
+    <div class={`demo ${motionPaused.value ? 'is-paused' : ''}`} ref={root}>
       <div class="demo-screen night" aria-hidden="true">
         <div class="demo-view">
         <div class="demo-line" />
@@ -144,6 +154,7 @@ export function Demo() {
         {note ?? 'A short demo: the highlight follows a pretend speaker.'}
       </p>
       <span class="sr-only">A demo: words light up as a speaker reads, skip a sentence, and pause.</span>
+      <MotionToggle class="demo-motion" />
     </div>
   )
 }
