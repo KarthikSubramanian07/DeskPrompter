@@ -188,12 +188,15 @@ function Landing() {
 
   return (
     <div class="landing">
+      <a class="skip-link" href="#content">
+        Skip to content
+      </a>
       <header class="nav">
         <a class="brand" href="/">
           <Mark />
           <span>DeskPrompter</span>
         </a>
-        <nav>
+        <nav aria-label="Main">
           <a href="#how">How it works</a>
           <a href="#faq">FAQ</a>
           <a class="nav-cta" href="/studio">
@@ -201,7 +204,7 @@ function Landing() {
           </a>
         </nav>
       </header>
-      <main>
+      <main id="content" tabIndex={-1}>
         <div ref={hero}>
           <Hero />
         </div>
