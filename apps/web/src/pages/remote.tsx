@@ -100,6 +100,7 @@ function App() {
 function JoinForm({ onJoin }: { onJoin: (code: string) => void }) {
   const [value, setValue] = useState('')
   const code = normalizeRoomCode(value)
+  const invalid = value.length >= 6 && !code
   return (
     <main class="remote remote--join">
       <header class="remote__bar">
@@ -130,8 +131,12 @@ function JoinForm({ onJoin }: { onJoin: (code: string) => void }) {
           spellcheck={false}
           maxLength={7}
           placeholder="K7P-Q2M"
-          aria-invalid={value.length >= 6 && !code}
+          aria-invalid={invalid}
+          aria-describedby="room-code-help"
         />
+        <p id="room-code-help" class={`join__error ${invalid ? 'is-shown' : ''}`} aria-live="polite">
+          {invalid ? 'That isn’t a room code. Codes are six letters and numbers, like K7P-Q2M.' : ''}
+        </p>
         <button class="btn btn--primary join__go" type="submit" disabled={!code}>
           Connect
         </button>
@@ -179,10 +184,12 @@ function Remote({ code }: { code: string }) {
         <span class="remote__brand">
           <Mark size={18} /> DeskPrompter
         </span>
-        <span class="remote__code" aria-label={`Room ${code.split('').join(' ')}`}>
-          {formatRoomCode(code)}
+        <span class="remote__code">
+          <span class="sr-only">Room {code.split('').join(' ')}</span>
+          <span aria-hidden="true">{formatRoomCode(code)}</span>
         </span>
       </header>
+      <h1 class="sr-only">Phone remote</h1>
 
       <section class="status" aria-live="polite">
         <span class={`status__dot status__dot--${status}`} aria-hidden="true" />
@@ -223,7 +230,6 @@ function Remote({ code }: { code: string }) {
           class={`btn btn--primary play${snapshot?.playing ? ' play--playing' : ''}`}
           type="button"
           disabled={!connected}
-          aria-pressed={!!snapshot?.playing}
           onClick={() => cmd({ c: 'toggle' }, 16)}
         >
           <Icon name={snapshot?.playing ? 'pause' : 'play'} />
