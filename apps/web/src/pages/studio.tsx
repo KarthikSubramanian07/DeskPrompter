@@ -63,8 +63,19 @@ function Studio() {
 
   return (
     <div class={`studio grain ${settings.value.theme === 'paper' ? 'day' : 'night'}`}>
+      <h1 class="sr-only">DeskPrompter Studio</h1>
       {view.value === 'desk' ? (
         <>
+          <a
+            class="skip-link"
+            href="#script-editor"
+            onClick={(e) => {
+              e.preventDefault()
+              document.getElementById('script-editor')?.focus()
+            }}
+          >
+            Skip to script
+          </a>
           <header class="bar">
             <a class="brand" href="/" aria-label="DeskPrompter home">
               <Mark />
@@ -79,8 +90,8 @@ function Studio() {
               </button>
               {bridge && <TalentButton />}
               {bridge && <PairButton bridge={bridge} />}
-              <span class="bar-privacy" title="Scripts are stored in this browser. Nothing is uploaded.">
-                <span class="dot-sage" /> {saveStatus.value === 'saving' ? 'Saving…' : saveStatus.value === 'error' ? 'Not saved' : 'Saved on this device'}
+              <span class="bar-privacy" role="status" title="Scripts are stored in this browser. Nothing is uploaded.">
+                <span class="dot-sage" aria-hidden="true" /> {saveStatus.value === 'saving' ? 'Saving…' : saveStatus.value === 'error' ? 'Not saved' : 'Saved on this device'}
               </span>
               <button
                 class="btn-go"

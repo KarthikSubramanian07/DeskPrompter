@@ -49,6 +49,7 @@ export function renderPage(page: TrustPage, md: string): string {
     <link rel="stylesheet" href="/src/styles/doc.css" />
   </head>
   <body class="doc day">
+    <a class="skip-link" href="#content">Skip to content</a>
     <header class="doc-nav">
       <a class="doc-brand" href="/">DeskPrompter</a>
       <nav aria-label="Site">
@@ -56,7 +57,7 @@ export function renderPage(page: TrustPage, md: string): string {
           <a class="doc-cta" href="/studio">Open the studio</a>
       </nav>
     </header>
-    <main class="doc-main">
+    <main class="doc-main" id="content" tabindex="-1">
 ${body.replace(/^/gm, '      ').trimEnd()}
     </main>
     <footer class="doc-foot">

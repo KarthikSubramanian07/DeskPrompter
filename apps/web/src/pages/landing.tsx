@@ -8,6 +8,7 @@ import { Mark } from '../ui/Mark'
 import { mountPoint } from '../mount'
 import { ModeIcon } from '../ui/icons'
 import { Demo } from '../ui/landing/Demo'
+import { MotionToggle, motionPaused } from '../ui/landing/motion'
 
 function Hero() {
   const stage = useRef<HTMLDivElement>(null)
@@ -33,6 +34,7 @@ function Hero() {
     ro.observe(el)
 
     const onMove = (e: PointerEvent) => {
+      if (motionPaused.value) return
       const r = el.getBoundingClientRect()
       pointer = { x: e.clientX - r.left, y: e.clientY - r.top }
       idleT = 0
@@ -63,8 +65,16 @@ function Hero() {
         pointer = null
         handle.rig.setMood('idle')
       }
+      // Paused: the light rests in the middle of the headline and stays there.
+      const paused = motionPaused.value
+      handle.paused = paused
+      if (paused) {
+        pointer = null
+        auto.x = hr.left - r.left + Math.min(hr.width, 640) * 0.5
+        auto.y = hr.top - r.top + hr.height * 0.5
+      }
       const want = pointer ?? auto
-      const k = 1 - Math.exp(-dt * (pointer ? 9 : 2.5))
+      const k = paused ? 1 : 1 - Math.exp(-dt * (pointer ? 9 : 2.5))
       pool.x += (want.x - pool.x) * k
       pool.y += (want.y - pool.y) * k
       const w = Math.max(260, r.width * 0.3)
@@ -117,6 +127,7 @@ function Hero() {
           </a>
         </div>
         <p class="hero-fine">Free. No sign-up. Your script stays on your device.</p>
+        <MotionToggle class="hero-motion" />
       </div>
       <Lamp handle={handle} />
     </section>
@@ -177,12 +188,15 @@ function Landing() {
 
   return (
     <div class="landing">
+      <a class="skip-link" href="#content">
+        Skip to content
+      </a>
       <header class="nav">
         <a class="brand" href="/">
           <Mark />
           <span>DeskPrompter</span>
         </a>
-        <nav>
+        <nav aria-label="Main">
           <a href="#how">How it works</a>
           <a href="#faq">FAQ</a>
           <a class="nav-cta" href="/studio">
@@ -190,7 +204,7 @@ function Landing() {
           </a>
         </nav>
       </header>
-      <main>
+      <main id="content" tabIndex={-1}>
         <div ref={hero}>
           <Hero />
         </div>

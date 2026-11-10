@@ -22,6 +22,8 @@ export interface LampHandle {
   hang: boolean
   /** Beam strength multiplier (0..1). */
   beamStrength: number
+  /** Hold still (WCAG 2.2.2): the lamp powers on, then stops moving until unpaused. */
+  paused?: boolean
 }
 
 export function createLampHandle(init?: Partial<LampHandle>): LampHandle {
@@ -68,9 +70,16 @@ export function Lamp({ handle, class: cls }: Props) {
   useEffect(() => {
     let raf = 0
     let last = performance.now()
+    const born = last
+    const reduce = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : null
     const frame = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000)
       last = now
+      // Paused or reduced motion: let it switch on, then keep it still.
+      if ((handle.paused || reduce?.matches) && now - born > 1500) {
+        raf = requestAnimationFrame(frame)
+        return
+      }
       const { anchor: a, rig } = handle
       const gaze = handle.look ?? handle.pool
       const fy = handle.hang ? -1 : 1

@@ -56,7 +56,8 @@
   font-size: clamp(68px, 11.5vw, 184px);
   line-height: 0.88; letter-spacing: -0.02em;
 }
-.hero-title .dim { color: #34302b; display: block; }
+/* Unlit words still read at 3:1 (WCAG 1.4.3, large text); the lamp brightens them further. */
+.hero-title .dim { color: #6b675f; display: block; }
 .hero-title .lit {
   position: absolute; inset: 0; color: #f6f1e6;
   -webkit-mask-image: radial-gradient(var(--pr, 300px) calc(var(--pr, 300px) * 0.5) at calc(var(--px) - var(--ox, 0px)) calc(var(--py) - var(--oy, 0px)), #000 25%, transparent 100%);
@@ -75,6 +76,7 @@
 .btn:active { transform: translateY(1px) scale(0.99); }
 .btn-clay { background: var(--clay); color: var(--on-clay); box-shadow: 0 12px 30px -14px var(--clay), inset 0 1px 0 #ffffff33; }
 .btn-clay:hover { filter: brightness(1.06); }
+.day .btn-clay:hover { filter: none; background: color-mix(in oklab, var(--clay) 86%, #000); }
 .btn-clay svg { transition: transform var(--t-ui) var(--ease); }
 .btn-clay:hover svg { transform: translateX(3px); }
 .btn-ghost { border: 1px solid var(--rule); color: var(--paper-dim); }
@@ -129,9 +131,21 @@
 .demo-status { position: absolute; left: 26px; bottom: 22px; display: flex; align-items: center; gap: 8px; font-family: var(--sans); font-size: 13px; color: #8f8b81; }
 .demo-dot { width: 7px; height: 7px; border-radius: 50%; background: #5f5b54; }
 .demo-dot.on { background: #d97757; box-shadow: 0 0 0 0 #d9775788; animation: live 1.6s var(--ease) infinite; }
+.demo.is-paused .demo-dot.on { animation: none; }
 @keyframes live { 0% { box-shadow: 0 0 0 0 #d9775777; } 80%, 100% { box-shadow: 0 0 0 9px transparent; } }
 .demo-note { margin: 16px 0 0; text-align: center; font-size: 15px; color: var(--stone); min-height: 1.5em; transition: color 300ms var(--ease); }
 .demo-note.show { color: var(--clay-deep); font-weight: 600; }
+
+/* ── pause control for the page's ambient motion ── */
+.motion-toggle {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 28px; padding: 4px 12px; border-radius: 999px;
+  font-size: 13px; color: var(--stone); border: 1px solid transparent;
+  transition: color var(--t-ui) var(--ease), border-color var(--t-ui) var(--ease);
+}
+.motion-toggle:hover { color: var(--fg); border-color: var(--line); }
+.motion-toggle[aria-pressed='true'] { color: var(--paper-dim); border-color: var(--stone-dim); }
+.hero-motion { margin: 14px 0 0 -12px; }
+.demo-motion { display: flex; width: fit-content; margin: 6px auto 0; }
 
 /* ── modes ── */
 .mode-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }

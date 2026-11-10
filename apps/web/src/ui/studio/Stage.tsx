@@ -80,6 +80,8 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
   const elapsed = useSignal(0)
   const countdown = useSignal<number | null>(null)
   const help = useSignal(false)
+  const helpReturn = useRef<HTMLElement | null>(null)
+  const helpClose = useRef<HTMLButtonElement>(null)
   const wordAt = useSignal(0)
   const s = settings.value
   // On phone-width screens the reading column needs every pixel; the lamp sits out.
@@ -288,15 +290,22 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
       hudVisible.value = true
       clearTimeout(t)
       t = setTimeout(() => {
-        if (prompterRef.current?.playing) hudVisible.value = false
+        if (prompterRef.current?.playing && !hud()) hudVisible.value = false
       }, 2600)
     }
+    // The controls stay up while one of them has keyboard focus.
+    const hud = () => document.activeElement?.closest?.('.hud')
     window.addEventListener('pointermove', show)
     window.addEventListener('pointerdown', show)
+    // Keyboard users bring the controls back too, so focus never lands on a hidden button.
+    window.addEventListener('keydown', show)
+    window.addEventListener('focusin', show)
     show()
     return () => {
       window.removeEventListener('pointermove', show)
       window.removeEventListener('pointerdown', show)
+      window.removeEventListener('keydown', show)
+      window.removeEventListener('focusin', show)
       clearTimeout(t)
     }
   }, [])
@@ -397,13 +406,14 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
           start()
           break
         case 'Escape':
-          if (help.value) help.value = false
+          if (help.value) closeHelp()
           else if (countdown.value !== null) countdown.value = null
           else onExit()
           break
         case '?':
         case '/':
-          help.value = !help.value
+          if (help.value) closeHelp()
+          else openHelp()
           break
         case 'ArrowUp':
           e.preventDefault()
@@ -463,6 +473,17 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
+  function openHelp() {
+    helpReturn.current = document.activeElement as HTMLElement | null
+    help.value = true
+    requestAnimationFrame(() => helpClose.current?.focus())
+  }
+  function closeHelp() {
+    help.value = false
+    const back = helpReturn.current
+    if (back?.isConnected && back !== document.body) back.focus()
+  }
+
   const exportCaptions = (kind: 'srt' | 'vtt') => {
     const l = listener.current
     if (!l) return
@@ -484,7 +505,8 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
   const remaining = estimateRemainingMs(wordsLeft, wpm)
 
   return (
-    <div
+    <main
+      aria-label={display ? 'Talent display' : 'Reading screen'}
       class={`stage night ${display ? 'is-display' : ''} ${hudVisible.value ? '' : 'hud-hidden'}`}
       style={{
         '--fs': `${s.fontSize}px`,
@@ -531,7 +553,13 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
           </button>
           <div class="hud-modes">
             {MODES.map((m, i) => (
-              <button class={`hud-mode ${s.mode === m.value ? 'on' : ''}`} title={`${m.label} (${i + 1})`} onClick={() => patchSettings({ mode: m.value })}>
+              <button
+                class={`hud-mode ${s.mode === m.value ? 'on' : ''}`}
+                title={`${m.label} (${i + 1})`}
+                aria-label={m.label}
+                aria-pressed={s.mode === m.value}
+                onClick={() => patchSettings({ mode: m.value })}
+              >
                 <ModeIcon mode={m.value} />
               </button>
             ))}
@@ -584,7 +612,7 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
             </>
           )}
           <span class="hud-sep" />
-          <button class={`hud-icon ${s.mirrorX ? 'on' : ''}`} onClick={() => patchSettings({ mirrorX: !s.mirrorX })} title="Mirror (M)" aria-label="Mirror">
+          <button class={`hud-icon ${s.mirrorX ? 'on' : ''}`} onClick={() => patchSettings({ mirrorX: !s.mirrorX })} title="Mirror (M)" aria-label="Mirror" aria-pressed={s.mirrorX}>
             <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
               <path d="M8 1.5v13" stroke="currentColor" stroke-dasharray="1.6 1.6" />
               <path d="M6 4 2 12h4zM10 4l4 8h-4z" fill="none" stroke="currentColor" stroke-linejoin="round" />
@@ -597,7 +625,11 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
           </button>
         </div>
       )}
-      {!display && status && <div class="stage-status">{status}</div>}
+      {!display && (
+        <div class="stage-status" role="status">
+          {status}
+        </div>
+      )}
       {!display && !playing.value && countdown.value === null && (
         <p class="stage-hint">
           {touch ? (
@@ -610,9 +642,29 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
         </p>
       )}
       {!display && help.value && (
-        <div class="keys" role="dialog" aria-label="Keyboard shortcuts" onClick={() => (help.value = false)}>
-          <div class="keys-card" onClick={(e) => e.stopPropagation()}>
-            <p class="keys-title">Keys on stage</p>
+        <div class="keys" onClick={closeHelp}>
+          <div
+            class="keys-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="keys-title"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              // One control inside: Tab stays on it.
+              if (e.key === 'Tab') {
+                e.preventDefault()
+                helpClose.current?.focus()
+              }
+            }}
+          >
+            <div class="keys-head">
+              <h2 class="keys-title" id="keys-title">
+                Keys on stage
+              </h2>
+              <button class="keys-close" ref={helpClose} onClick={closeHelp}>
+                Close
+              </button>
+            </div>
             <dl>
               {KEYS.map(([k, v]) => (
                 <div key={v}>
@@ -629,6 +681,6 @@ export function Stage({ script, parsed, onExit, onReady, level, status, display,
           </div>
         </div>
       )}
-    </div>
+    </main>
   )
 }
