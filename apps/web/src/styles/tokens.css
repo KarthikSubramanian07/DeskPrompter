@@ -86,13 +86,13 @@
   --rule-soft: #ebe6da;
   --paper: #1b1a17;
   --paper-dim: #4a4740;
-  --stone: #74706a;
+  --stone: #6a6661;      /* 4.6:1 or better on every day surface (WCAG 1.4.3) */
   --stone-dim: #a8a398;
   --sage: #cfe0d4;
   --sage-glow: #3f7a5a;
   --amber: #b07226;
   --amber-hi: #8f5a17;
-  --clay: #c6613f;
+  --clay: #aa5336;       /* 4.6:1 as text on paper and under --on-clay */
   --clay-deep: #a94f31;
   --on-clay: #fffaf5;
   --bg: var(--ink);

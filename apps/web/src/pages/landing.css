@@ -56,7 +56,8 @@
   font-size: clamp(68px, 11.5vw, 184px);
   line-height: 0.88; letter-spacing: -0.02em;
 }
-.hero-title .dim { color: #34302b; display: block; }
+/* Unlit words still read at 3:1 (WCAG 1.4.3, large text); the lamp brightens them further. */
+.hero-title .dim { color: #6b675f; display: block; }
 .hero-title .lit {
   position: absolute; inset: 0; color: #f6f1e6;
   -webkit-mask-image: radial-gradient(var(--pr, 300px) calc(var(--pr, 300px) * 0.5) at calc(var(--px) - var(--ox, 0px)) calc(var(--py) - var(--oy, 0px)), #000 25%, transparent 100%);
@@ -75,6 +76,7 @@
 .btn:active { transform: translateY(1px) scale(0.99); }
 .btn-clay { background: var(--clay); color: var(--on-clay); box-shadow: 0 12px 30px -14px var(--clay), inset 0 1px 0 #ffffff33; }
 .btn-clay:hover { filter: brightness(1.06); }
+.day .btn-clay:hover { filter: none; background: color-mix(in oklab, var(--clay) 86%, #000); }
 .btn-clay svg { transition: transform var(--t-ui) var(--ease); }
 .btn-clay:hover svg { transform: translateX(3px); }
 .btn-ghost { border: 1px solid var(--rule); color: var(--paper-dim); }
