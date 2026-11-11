@@ -56,6 +56,9 @@ describe('worker', () => {
     for (const res of [await get('/'), await get('/', 'text/markdown'), await get('/og.png')]) {
       expect(res.headers.get('Cross-Origin-Opener-Policy')).toBe('same-origin')
       expect(res.headers.get('Cross-Origin-Embedder-Policy')).toBe('require-corp')
+      expect(res.headers.get('X-Content-Type-Options')).toBe('nosniff')
+      expect(res.headers.get('X-Frame-Options')).toBe('DENY')
+      expect(res.headers.get('Content-Security-Policy')).toContain("frame-ancestors 'none'")
     }
   })
   it('does not add Vary to plain files', async () => {

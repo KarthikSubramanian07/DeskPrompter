@@ -18,9 +18,19 @@ export const ISOLATION_HEADERS: Record<string, string> = {
   'Cross-Origin-Embedder-Policy': 'require-corp',
 }
 
+/** Baseline hardening on every response (the worker replaces `_headers`, so it sets these). */
+export const SECURITY_HEADERS: Record<string, string> = {
+  'Strict-Transport-Security': 'max-age=63072000; includeSubDomains',
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Content-Security-Policy': "frame-ancestors 'none'; object-src 'none'; base-uri 'self'",
+}
+
 function withHeaders(res: Response, extra: Record<string, string>, varyAccept: boolean): Response {
   const out = new Response(res.body, res)
   for (const [k, v] of Object.entries(ISOLATION_HEADERS)) out.headers.set(k, v)
+  for (const [k, v] of Object.entries(SECURITY_HEADERS)) if (!out.headers.has(k)) out.headers.set(k, v)
   for (const [k, v] of Object.entries(extra)) out.headers.set(k, v)
   if (varyAccept) {
     const vary = out.headers.get('Vary')
